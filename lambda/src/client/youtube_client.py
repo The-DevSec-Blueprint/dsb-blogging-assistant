@@ -1,8 +1,9 @@
 from googleapiclient.discovery import build
-import requests
-import re
+from youtube_transcript_api import YouTubeTranscriptApi
+import textwrap
 
 # YouTube API key
+# TODO: Rotate this key to prevent abuse.
 api_key = 'AIzaSyDcYBTNiVmMEu6xWDRK5tTbxHx9FCf8_XI' # Put into SSM Parameter Store or Secrets Manager
 
 # The name of the channel
@@ -27,40 +28,19 @@ latest_video = youtube.search().list(
     channelId=channel_id,
     type='video',
     order='date',
-    videoDuration='long',
-).execute()["items"][0]
+).execute()['items'][0]
 
 latest_video_id = latest_video['id']['videoId']
 
-def get_video_transcript(video_id):
-    # Retrieve captions for the video
-    captions_response = youtube.captions().list(
-        part='snippet',
-        videoId=video_id
-    ).execute()
+transcript = YouTubeTranscriptApi.get_transcript(video_id=latest_video_id, languages=['en'])
 
-    # Find the caption track corresponding to the transcript
-    transcript_caption_track = None
-    for caption in captions_response['items']:
-        if caption['snippet']['trackKind'] == 'standard' and caption['snippet']['language'] == 'en':
-            transcript_caption_track = caption
-            break
-
-    if transcript_caption_track:
-        # Download the caption track
-        caption_url = transcript_caption_track['snippet']['url']
-        caption_data = requests.get(caption_url).text
-
-        # Parse the caption track to extract the transcript
-        transcript = ''
-        for line in caption_data.splitlines():
-            if re.match(r'^\d+:\d+:\d+', line):
-                continue  # Skip timestamp lines
-            transcript += line.strip() + ' '
-
-        return transcript
-    else:
-        return "Transcript not available for this video."
+def format_transcript(transcript, max_line_width=80):
+    formatted_transcript = ""
+    wrapper = textwrap.TextWrapper(width=max_line_width)
     
-transcript = get_video_transcript(latest_video_id)
-print(transcript)
+    for entry in transcript:
+        wrapped_text = wrapper.fill(text=entry['text'])
+        formatted_transcript += wrapped_text + "\n"
+    return formatted_transcript
+
+formatted_transcript = format_transcript(transcript)

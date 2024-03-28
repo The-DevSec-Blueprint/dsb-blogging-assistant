@@ -1,10 +1,10 @@
 from openai import OpenAI
 
+# TODO: Rotate this key to prevent abuse.
 CHATGPT_API_KEY = "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"
 
 def ask_chatgpt(prompt):
-    """
-    """
+    """ """
     client = OpenAI(api_key=CHATGPT_API_KEY)
 
     chat_completion = client.chat.completions.create(
@@ -17,6 +17,7 @@ def ask_chatgpt(prompt):
         model="gpt-3.5-turbo",
     )
     print(chat_completion.choices[0].message.content)
+
 
 if __name__ == "__main__":
     transcript = ""
