@@ -3,6 +3,7 @@ from openai import OpenAI
 # TODO: Rotate this key to prevent abuse.
 CHATGPT_API_KEY = "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"
 
+
 def ask_chatgpt(prompt):
     """ """
     client = OpenAI(api_key=CHATGPT_API_KEY)
