@@ -21,6 +21,8 @@ resource "aws_iam_role" "lambda_exec_role" {
       },
     ]
   })
+
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
 }
 
 data "archive_file" "lambda_src" {
@@ -33,7 +35,7 @@ resource "aws_lambda_function" "default" {
   filename         = "lambda_src.zip"
   function_name    = "dsb-blogging-assistant-lambda"
   role             = aws_iam_role.lambda_exec_role.arn
-  handler          = "handler.main"
+  handler          = "src.handler.main"
   source_code_hash = data.archive_file.lambda_src.output_base64sha256
   runtime          = "python3.11"
 }
