@@ -1,5 +1,3 @@
-#TODO: Modularize everything
-
 # SNS Topic
 resource "aws_sns_topic" "default" {
   name = "dsb-blogging-assistant-yt-topic"
@@ -41,7 +39,7 @@ resource "aws_lambda_function" "default" {
 }
 
 # Step Function
-resource "aws_sfn_state_machine" "sfn_state_machine" {
+resource "aws_sfn_state_machine" "default_sfn" {
   name     = "dsb-blogging-assistant-sfn"
   role_arn = aws_iam_role.sfn_iam_role.arn
 
@@ -60,9 +58,16 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
 EOF
 
   logging_configuration {
-    level = "ALL"
+    log_destination        = "${aws_cloudwatch_log_group.default_sfn_lg.arn}:*"
+    include_execution_data = true
+    level                  = "ALL"
   }
 }
+
+resource "aws_cloudwatch_log_group" "default_sfn_lg" {
+  name = "dsb-blogging-assistant-sfn-log-group"
+}
+
 resource "aws_iam_role" "sfn_iam_role" {
   name = "dsb-blogging-assistant-sfn-role"
 
@@ -94,9 +99,16 @@ data "aws_iam_policy_document" "inline_policy" {
 
   statement {
     actions = [
-      "logs:CreateLogGroup",
+      "logs:CreateLogDelivery",
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:GetLogDelivery",
+      "logs:UpdateLogDelivery",
+      "logs:DeleteLogDelivery",
+      "logs:ListLogDeliveries",
+      "logs:PutLogEvents",
+      "logs:PutResourcePolicy",
+      "logs:DescribeResourcePolicies",
+      "logs:DescribeLogGroups"
     ]
     resources = ["*"]
   }
