@@ -58,9 +58,13 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
   }
 }
 EOF
+
+  logging_configuration {
+    level = "ALL"
+  }
 }
 resource "aws_iam_role" "sfn_iam_role" {
-  name = "test_role"
+  name = "dsb-blogging-assistant-sfn-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -86,5 +90,14 @@ data "aws_iam_policy_document" "inline_policy" {
   statement {
     actions   = ["lambda:InvokeFunction"]
     resources = [aws_lambda_function.default.arn]
+  }
+
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["*"]
   }
 }
