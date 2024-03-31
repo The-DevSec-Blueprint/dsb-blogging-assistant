@@ -29,6 +29,11 @@ resource "aws_ssm_parameter" "youtube_authtoken" {
 }
 
 # ECR Repository
+data "aws_ecr_image" "lambda_image_lookup" {
+  repository_name = aws_ecr_repository.lambda_image.name
+  most_recent = true
+}
+
 resource "aws_ecr_repository" "lambda_image" {
   name         = "dsb-blogging-assistant-lambda-image"
   force_delete = true
@@ -74,7 +79,7 @@ resource "aws_lambda_function" "default" {
   function_name = "dsb-blogging-assistant-lambda"
   role          = aws_iam_role.lambda_exec_role.arn
 
-  image_uri    = "${aws_ecr_repository.lambda_image.repository_url}:latest"
+  image_uri    = data.aws_ecr_image.lambda_image_lookup.image_uri
   timeout      = 120 # 2 minutes
   package_type = "Image"
 

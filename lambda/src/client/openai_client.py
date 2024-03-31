@@ -31,5 +31,5 @@ class OpenAIClient:
         return answer
 
     def _create_authenticated_client(self):
-        auth_token = SsmClient.get_parameter(name="/credentials/openai/auth_token")
+        auth_token = SsmClient().get_parameter(name="/credentials/openai/auth_token")
         return OpenAI(api_key=auth_token)
