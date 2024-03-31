@@ -1,7 +1,7 @@
 import logging
 
-from git import Repo
-from git.exc import GitCommandError
+from src.public_modules.git import Repo
+from src.public_modules.git.exc import GitCommandError
 
 from ssm_client import SsmClient
 

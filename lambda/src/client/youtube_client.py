@@ -1,7 +1,7 @@
 import textwrap
 
-from googleapiclient.discovery import build
-from youtube_transcript_api import YouTubeTranscriptApi
+from src.public_modules.googleapiclient.discovery import build
+from src.public_modules.youtube_transcript_api import YouTubeTranscriptApi
 
 from ssm_client import SsmClient
 
