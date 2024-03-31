@@ -76,7 +76,6 @@ resource "aws_sfn_state_machine" "default_sfn" {
   role_arn   = aws_iam_role.sfn_iam_role.arn
   definition = <<EOF
   {
-    "Comment": "An example Step Functions state machine that executes a Lambda function with a variable",
     "StartAt": "getVideoId",
     "States": {
       "getVideoId": {
