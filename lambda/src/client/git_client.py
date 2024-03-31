@@ -3,7 +3,7 @@ import logging
 from git import Repo
 from git.exc import GitCommandError
 
-from ssm_client import SsmClient
+from client.ssm_client import SsmClient
 
 
 class GitClient:

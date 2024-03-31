@@ -3,7 +3,7 @@ import textwrap
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 
-from ssm_client import SsmClient
+from client.ssm_client import SsmClient
 
 CHANNEL_NAME = "The DevSec Blueprint (DSB)"
 
