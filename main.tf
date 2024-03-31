@@ -87,9 +87,9 @@ resource "aws_sfn_state_machine" "default_sfn" {
   role_arn   = aws_iam_role.sfn_iam_role.arn
   definition = <<EOF
   {
-    "StartAt": "getVideoId",
+    "StartAt": "Get Video Information",
     "States": {
-      "getVideoId": {
+      "Get Video Information": {
         "Type": "Task",
         "Resource": "${aws_lambda_function.default.arn}",
         "Parameters": {
@@ -97,6 +97,16 @@ resource "aws_sfn_state_machine" "default_sfn" {
           "videoName.$": "$.videoName"
         },
         "ResultPath": "$.getVideoId",
+        "Next": "Generate Blog Post with OpenAI"
+      },
+      "Generate Blog Post with OpenAI": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.default.arn}",
+        "Parameters": {
+          "actionName": "generateBlogPost",
+          "videoId.$": "$.generateBlogPost"
+        },
+        "ResultPath": "$.generateBlogPost",
         "Next": "Success"
       },
       "Success": {
