@@ -1,5 +1,6 @@
 from src.client.youtube_client import YoutubeClient
 
+
 def main(event, _):
     action_name = event["actionName"]
     video_name = event["videoName"]

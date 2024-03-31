@@ -1,0 +1,17 @@
+name: "Pull Request Workflow"
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+    build-docker-image:
+        uses: ./.github/workflows/docker-build.yml
+        secrets: inherit
+    run-terraform-plan:
+        needs: build-docker-image
+        uses: ./.github/workflows/terraform-plan.yml
+        permissions:
+          pull-requests: write
+          contents: read
+        secrets: inherit

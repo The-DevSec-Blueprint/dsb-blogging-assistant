@@ -1,0 +1,18 @@
+name: "Pull Request Workflow"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+    build-and-publish-docker-image:
+        uses: ./.github/workflows/docker-build-and-publish.yml
+        secrets: inherit
+    run-terraform-apply:
+        needs: build-and-publish-docker-image
+        uses: ./.github/workflows/terraform-apply.yml
+        permissions:
+            contents: read
+        secrets: inherit

@@ -1,9 +1,7 @@
 name: "Terraform Apply"
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
 
 env:
   TF_CLOUD_ORGANIZATION: "DSB"
