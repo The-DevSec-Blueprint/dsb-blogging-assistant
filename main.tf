@@ -70,12 +70,6 @@ resource "aws_iam_role" "lambda_exec_role" {
   }
 }
 
-data "archive_file" "lambda_src" {
-  type        = "zip"
-  source_dir  = "./lambda"
-  output_path = "lambda_src.zip"
-}
-
 resource "aws_lambda_function" "default" {
   function_name = "dsb-blogging-assistant-lambda"
   role          = aws_iam_role.lambda_exec_role.arn
@@ -84,6 +78,7 @@ resource "aws_lambda_function" "default" {
 
   image_uri = "${aws_ecr_repository.lambda_image.repository_url}:latest"
   timeout = 120 # 2 minutes
+  package_type = "Image"
 
   depends_on = [aws_ecr_repository.lambda_image]
 }
