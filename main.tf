@@ -94,7 +94,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Resource": "${aws_lambda_function.default.arn}",
         "Parameters": {
           "input": {
-            "action_name": "getVideoId",
+            "actionName": "getVideoId",
             "videoName.$": "$.videoName"
           }
         },
