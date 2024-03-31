@@ -104,7 +104,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Resource": "${aws_lambda_function.default.arn}",
         "Parameters": {
           "actionName": "generateBlogPost",
-          "videoId.$": "$.generateBlogPost"
+          "videoId.$": "$.getVideoId.videoId"
         },
         "ResultPath": "$.generateBlogPost",
         "Next": "Success"

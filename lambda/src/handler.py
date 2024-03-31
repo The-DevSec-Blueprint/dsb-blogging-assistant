@@ -3,9 +3,9 @@ from client.openai_client import OpenAIClient
 
 def main(event, _):
     action_name = event["actionName"]
-    video_name = event["videoName"]
 
     if action_name == "getVideoId":
+        video_name = event["videoName"]
         response = action_get_video_id(video_name)
     if action_name == "generateBlogPost":
         video_id = event["videoId"]
