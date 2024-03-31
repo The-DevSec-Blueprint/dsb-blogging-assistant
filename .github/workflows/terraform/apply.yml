@@ -1,13 +1,7 @@
 name: "Terraform Apply"
 
 on:
-  workflow_run:
-    workflows: ["Publish Docker Image to ECR"]
-    types:
-      - completed
-  push:
-    branches:
-      - main
+  workflow_call:
 
 env:
   TF_CLOUD_ORGANIZATION: "DSB"
