@@ -24,7 +24,7 @@ def action_get_video_id(video_name):
 
 def action_generate_blog_post(video_id):
     transcript = YouTubeClient().get_video_transcript(video_id)
-    markdown_blog = OpenAIClient.ask(transcript)
+    markdown_blog = OpenAIClient().ask(transcript)
     return {
         "blogPostContents": markdown_blog
     }
