@@ -74,7 +74,30 @@ resource "aws_lambda_function" "default" {
 resource "aws_sfn_state_machine" "default_sfn" {
   name       = "dsb-blogging-assistant-sfn"
   role_arn   = aws_iam_role.sfn_iam_role.arn
-  definition = file("./sfn/definition.json")
+  definition = <<EOF
+  {
+    "Comment": "An example Step Functions state machine that executes a Lambda function with a variable",
+    "StartAt": "getVideoId",
+    "States": {
+      "getVideoId": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.default.arn}",
+        "Parameters": {
+          "input": {
+            "action_name": "get_video_id",
+            "videoName.$": "$.videoName",
+          }
+        },
+        "ResultPath": "$.lambdaOutput",
+        "Next": "Success"
+      },
+      "Success": {
+        "Type": "Succeed"
+      }
+    }
+  }
+  
+  EOF
   logging_configuration {
     log_destination        = "${aws_cloudwatch_log_group.default_sfn_lg.arn}:*"
     include_execution_data = true
