@@ -3,9 +3,9 @@ from openai import OpenAI
 
 from client.ssm_client import SsmClient
 
-BASE_QUESTION = """Hello! Could you create a 1500-word blog 
+BASE_QUESTION = """Hello! Could you create a summarized 1500-word blog 
 post in markdown with pictures/diagrams in first person 
-that are based on the information below: """
+that are based on the following transcript: """
 
 
 class OpenAIClient:
