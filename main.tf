@@ -84,10 +84,10 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Parameters": {
           "input": {
             "action_name": "getVideoId",
-            "videoName.$": "$.videoName",
+            "videoName.$": "$.videoName"
           }
         },
-        "ResultPath": "$.lambdaOutput",
+        "ResultPath": "$.getVideoId",
         "Next": "Success"
       },
       "Success": {
@@ -95,7 +95,6 @@ resource "aws_sfn_state_machine" "default_sfn" {
       }
     }
   }
-  
   EOF
   logging_configuration {
     log_destination        = "${aws_cloudwatch_log_group.default_sfn_lg.arn}:*"
