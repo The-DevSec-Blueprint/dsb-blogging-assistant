@@ -8,6 +8,11 @@ on:
 
 jobs:
     build-and-publish-docker-image:
-        uses: ./.github/workflows/docker/publish.yml
+        uses: ./.github/workflows/docker-build-and-publish.yml
+        secrets: inherit
     run-terraform-apply:
-        uses: ./.github/workflows/terraform/apply.yml
+        needs: build-and-publish-docker-image
+        uses: ./.github/workflows/terraform-apply.yml
+        permissions:
+            contents: read
+        secrets: inherit
