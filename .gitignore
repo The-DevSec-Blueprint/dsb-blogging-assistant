@@ -1,5 +1,8 @@
 .env/
 
+# Credentials
+.credentials/
+
 # Local .terraform directories
 **/.terraform/*
 .terraform.*

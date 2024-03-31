@@ -1,25 +1,29 @@
+import logging
 from openai import OpenAI
 
-# TODO: Rotate this key to prevent abuse.
-CHATGPT_API_KEY = "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"
+BASE_QUESTION = """Hello! Could you create a 1500-word blog 
+post in markdown with pictures/diagrams in first person 
+that are based on the information below: """
 
 
-def ask_chatgpt(prompt):
-    """ """
-    client = OpenAI(api_key=CHATGPT_API_KEY)
+class OpenAIClient:
+    def __init__(self, api_key) -> None:
+        self.openai_client = OpenAI(api_key=api_key)
 
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        model="gpt-3.5-turbo",
-    )
-    print(chat_completion.choices[0].message.content)
+    def ask(self, transcript):
+        question = BASE_QUESTION + transcript + "\n\n"
 
+        chat_completion = self.openai_client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": question,
+                }
+            ],
+            model="gpt-3.5-turbo",
+        )
 
-if __name__ == "__main__":
-    transcript = ""
-    question = f"Hello! Could you create a 1500-word blog post in markdown with pictures/diagrams in first person that are based on the information below: {transcript}"
+        answer = chat_completion.choices[0].message.content
+
+        logging.info("Call to ChatGPT was successful: %s", answer)
+        return answer
