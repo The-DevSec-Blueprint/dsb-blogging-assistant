@@ -1,4 +1,4 @@
-from src.client.youtube_client import YoutubeClient
+from .client.youtube_client import YoutubeClient
 
 
 def main(event, _):
