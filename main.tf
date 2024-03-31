@@ -73,8 +73,6 @@ resource "aws_iam_role" "lambda_exec_role" {
 resource "aws_lambda_function" "default" {
   function_name = "dsb-blogging-assistant-lambda"
   role          = aws_iam_role.lambda_exec_role.arn
-  handler       = "handler.main"
-  runtime       = "provided.al2"
 
   image_uri = "${aws_ecr_repository.lambda_image.repository_url}:latest"
   timeout = 120 # 2 minutes

@@ -1,4 +1,4 @@
-from .client.youtube_client import YoutubeClient
+from client.youtube_client import YouTubeClient
 
 
 def main(event, _):
@@ -12,7 +12,7 @@ def main(event, _):
 
 
 def action_get_video_id(video_name):
-    youtube_client = YoutubeClient()
+    youtube_client = YouTubeClient()
     video_id = youtube_client.get_video_id(video_name)
     return video_id
 
