@@ -70,5 +70,5 @@ class YouTubeClient:
 
     def _create_authenticated_client(self):
         ssm_client = SsmClient()
-        api_key = ssm_client.get_parameter("credentials/youtube/auth_token")
+        api_key = ssm_client.get_parameter("/credentials/youtube/auth_token")
         return build("youtube", "v3", developerKey=api_key)

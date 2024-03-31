@@ -93,10 +93,8 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Type": "Task",
         "Resource": "${aws_lambda_function.default.arn}",
         "Parameters": {
-          "input": {
-            "actionName": "getVideoId",
-            "videoName.$": "$.videoName"
-          }
+          "actionName": "getVideoId",
+          "videoName.$": "$.videoName"
         },
         "ResultPath": "$.getVideoId",
         "Next": "Success"

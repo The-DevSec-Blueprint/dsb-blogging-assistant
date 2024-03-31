@@ -1,14 +1,16 @@
 import logging
 from openai import OpenAI
 
+from client.ssm_client import SsmClient
+
 BASE_QUESTION = """Hello! Could you create a 1500-word blog 
 post in markdown with pictures/diagrams in first person 
 that are based on the information below: """
 
 
 class OpenAIClient:
-    def __init__(self, api_key) -> None:
-        self.openai_client = OpenAI(api_key=api_key)
+    def __init__(self) -> None:
+        self.openai_client = self._create_authenticated_client()
 
     def ask(self, transcript):
         question = BASE_QUESTION + transcript + "\n\n"
@@ -27,3 +29,7 @@ class OpenAIClient:
 
         logging.info("Call to ChatGPT was successful: %s", answer)
         return answer
+
+    def _create_authenticated_client(self):
+        auth_token = SsmClient.get_parameter(name="/credentials/openai/auth_token")
+        return OpenAI(api_key=auth_token)

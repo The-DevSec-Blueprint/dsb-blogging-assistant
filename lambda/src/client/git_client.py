@@ -26,7 +26,7 @@ class GitClient:
             raise e
 
     def _create_authenticated_url(self):
-        username = SsmClient.get_parameter(name="credentials/git/username")
-        token = SsmClient.get_parameter(name="credentials/git/auth_token")
+        username = SsmClient.get_parameter(name="/credentials/git/username")
+        token = SsmClient.get_parameter(name="/credentials/git/auth_token")
         repo_url = f"https://{username}:{token}@github.com/The-DevSec-Blueprint/dsb-digest.git"  # Replace with your repository URL
         return repo_url
