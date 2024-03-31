@@ -1,5 +1,5 @@
 import logging
-from src.public_modules.openai import OpenAI
+from openai import OpenAI
 
 BASE_QUESTION = """Hello! Could you create a 1500-word blog 
 post in markdown with pictures/diagrams in first person 

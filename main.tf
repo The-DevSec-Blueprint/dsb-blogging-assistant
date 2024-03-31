@@ -28,6 +28,11 @@ resource "aws_ssm_parameter" "youtube_authtoken" {
   value = var.YOUTUBE_AUTH_TOKEN
 }
 
+# ECR Repository
+resource "aws_ecr_repository" "lambda_image" {
+  name = "dsb-blogging-assistant-lambda-image"
+}
+
 # Lambda Function
 resource "aws_iam_role" "lambda_exec_role" {
   name = "dsb-blogging-assistant-lambda-exec-role"
@@ -60,7 +65,9 @@ resource "aws_lambda_function" "default" {
   role             = aws_iam_role.lambda_exec_role.arn
   handler          = "src.handler.main"
   source_code_hash = data.archive_file.lambda_src.output_base64sha256
-  runtime          = "python3.11"
+  runtime          = "provided.al2"
+
+  # image_uri = ""
 
   timeout = 120 # 2 minutes
   environment {
@@ -68,6 +75,8 @@ resource "aws_lambda_function" "default" {
       "CHANNEL_NAME" : "The DevSec Blueprint (DSB)"
     }
   }
+
+  depends_on = [ aws_ecr_repository.lambda_image ]
 }
 
 # Step Function
