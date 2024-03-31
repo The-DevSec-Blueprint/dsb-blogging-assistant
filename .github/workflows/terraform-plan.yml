@@ -2,7 +2,7 @@ name: "Terraform Plan"
 
 on:
   workflow_run:
-    workflows: ["Publish Docker Image to ECR"]
+    workflows: ["Build Docker Image"]
     types:
       - completed
   pull_request:
