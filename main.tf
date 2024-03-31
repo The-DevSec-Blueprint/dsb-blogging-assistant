@@ -30,7 +30,8 @@ resource "aws_ssm_parameter" "youtube_authtoken" {
 
 # ECR Repository
 resource "aws_ecr_repository" "lambda_image" {
-  name = "dsb-blogging-assistant-lambda-image"
+  name         = "dsb-blogging-assistant-lambda-image"
+  force_delete = true
 }
 
 # Lambda Function
@@ -51,6 +52,22 @@ resource "aws_iam_role" "lambda_exec_role" {
   })
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
+  inline_policy {
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Action = [
+            "ecr:GetAuthorizationToken",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchGetImage"
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        }
+      ]
+    })
+  }
 }
 
 data "archive_file" "lambda_src" {
@@ -60,23 +77,15 @@ data "archive_file" "lambda_src" {
 }
 
 resource "aws_lambda_function" "default" {
-  filename         = "lambda_src.zip"
-  function_name    = "dsb-blogging-assistant-lambda"
-  role             = aws_iam_role.lambda_exec_role.arn
-  handler          = "src.handler.main"
-  source_code_hash = data.archive_file.lambda_src.output_base64sha256
-  runtime          = "provided.al2"
+  function_name = "dsb-blogging-assistant-lambda"
+  role          = aws_iam_role.lambda_exec_role.arn
+  handler       = "handler.main"
+  runtime       = "provided.al2"
 
-  # image_uri = ""
-
+  image_uri = "${aws_ecr_repository.lambda_image.repository_url}:latest"
   timeout = 120 # 2 minutes
-  environment {
-    variables = {
-      "CHANNEL_NAME" : "The DevSec Blueprint (DSB)"
-    }
-  }
 
-  depends_on = [ aws_ecr_repository.lambda_image ]
+  depends_on = [aws_ecr_repository.lambda_image]
 }
 
 # Step Function
