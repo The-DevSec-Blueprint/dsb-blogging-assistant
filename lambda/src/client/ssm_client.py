@@ -7,4 +7,6 @@ class SsmClient:
         self.client = boto3.client("ssm")
 
     def get_parameter(self, name):
-        return self.client.get_parameter(Name=name, WithDecryption=True)["Parameter"]["Value"]
+        return self.client.get_parameter(Name=name, WithDecryption=True)["Parameter"][
+            "Value"
+        ]

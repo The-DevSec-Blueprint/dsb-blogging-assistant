@@ -112,6 +112,16 @@ resource "aws_sfn_state_machine" "default_sfn" {
           "videoId.$": "$.getVideoId.videoId"
         },
         "ResultPath": "$.generateBlogPost",
+        "Next": "Check In MD Blog to GitHub"
+      },
+      "Publish MD Blog to GitHub": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.default.arn}",
+        "Parameters": {
+          "actionName": "commitBlogToGitHub",
+          "blogPostContents.$": "$.generateBlogPost.blogPostContents"
+        },
+        "ResultPath": "$.commitBlogToGitHub",
         "Next": "Success"
       },
       "Success": {

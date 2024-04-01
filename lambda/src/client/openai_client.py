@@ -7,6 +7,18 @@ BASE_QUESTION = """Hello! Could you create a summarized 1500-word blog
 post in markdown with pictures/diagrams in first person 
 that are based on the following transcript: """
 
+MD_METADATA = """
+---
+title: TBD
+subtitle: TBD
+slug: TBD
+tags: TBD
+cover: TBD
+domain: damienjburks.hashnode.dev
+saveAsDraft: true
+---
+"""
+
 
 class OpenAIClient:
     def __init__(self) -> None:
@@ -25,9 +37,9 @@ class OpenAIClient:
             model="gpt-3.5-turbo",
         )
 
-        answer = chat_completion.choices[0].message.content
+        answer = MD_METADATA + "\n\n" + chat_completion.choices[0].message.content
 
-        logging.info("Call to ChatGPT was successful: %s", answer)
+        logging.info("API call was successful! OpenAI response: %s", answer)
         return answer
 
     def _create_authenticated_client(self):
