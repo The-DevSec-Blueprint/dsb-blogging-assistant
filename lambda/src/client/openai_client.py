@@ -3,12 +3,11 @@ from openai import OpenAI
 
 from client.ssm_client import SsmClient
 
-BASE_QUESTION = """Hello! Could you create a 2000 word detailed blog post 
+BASE_QUESTION = """Hello! Could you create a 2000-2500 word detailed blog post 
 in markdown with placeholders for pictures and diagrams, and emojis 
-in first person that are based on the transcript from my video below: """
+in first person that are based on the transcript from my video below:\n """
 
-MD_METADATA = """
----
+MD_METADATA = """---
 title: TBD
 subtitle: TBD
 slug: TBD

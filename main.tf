@@ -31,7 +31,7 @@ resource "aws_ssm_parameter" "youtube_authtoken" {
 # ECR Repository
 data "aws_ecr_image" "lambda_image_lookup" {
   repository_name = aws_ecr_repository.lambda_image.name
-  most_recent = true
+  most_recent     = true
 }
 
 resource "aws_ecr_repository" "lambda_image" {
@@ -119,6 +119,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Resource": "${aws_lambda_function.default.arn}",
         "Parameters": {
           "actionName": "commitBlogToGitHub",
+          "videoName.$": "$.videoName",
           "blogPostContents.$": "$.generateBlogPost.blogPostContents"
         },
         "ResultPath": "$.commitBlogToGitHub",

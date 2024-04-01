@@ -18,17 +18,17 @@ class GitClient:
 
         repo.index.add("rename_file.md")
         commit_info = repo.index.commit(
-            "Initial Commit of Post for video, %s", video_title
+            message=f"Initial commit of blog for video: {video_title}", skip_hooks=True
         )
 
-        logging.info("File & Commit created successfully!")
+        logging.info("Commit created successfully!")
 
         return commit_info
 
     def push(self, repo: Repo):
         origin = repo.remote("origin")
-        origin.push()
-        logging.info("Push to GitHub happened successfully!")
+        repo.git.push("--set-upstream", origin.name, repo.active_branch.name)
+        logging.info("Push to GitHub successfully!")
 
     def clone(self, branch_name):
         try:
@@ -36,7 +36,7 @@ class GitClient:
             logging.info("Repository cloned successfully!")
 
             # Checkout a new branch
-            new_branch = repo.create_head(branch_name)
+            new_branch = repo.create_head(branch_name, force=True)
             repo.head.reference = new_branch
             repo.head.reset(index=True, working_tree=True)
 
@@ -49,11 +49,5 @@ class GitClient:
         username = SsmClient().get_parameter(name="/credentials/git/username")
         token = SsmClient().get_parameter(name="/credentials/git/auth_token")
         repo_url = f"https://{username}:{token}@github.com/The-DevSec-Blueprint/dsb-digest.git"  # Replace with your repository URL
+
         return repo_url
-
-
-if __name__ == "__main__":
-    GitClient().clone()
-    GitClient().commit()
-    GitClient().push()
-    print("Done!")

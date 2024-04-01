@@ -16,7 +16,8 @@ def main(event, _):
         response = action_generate_blog_post(video_id)
     if action_name == "commitBlogToGitHub":
         blog_post_contents = event["blogPostContents"]
-        response = action_commit_blog_to_github(blog_post_contents)
+        video_name = event["videoName"]
+        response = action_commit_blog_to_github(video_name, blog_post_contents)
 
     return response
 
@@ -36,7 +37,7 @@ def action_generate_blog_post(video_id):
 def action_commit_blog_to_github(video_title, blog_post_contents):
     git_client = GitClient()
 
-    branch_name = hashlib.sha256(video_title.encode("utf-8"))
+    branch_name = hashlib.sha256(video_title.encode("utf-8")).hexdigest()
     repo = git_client.clone(branch_name)
 
     commit_info = git_client.commit(video_title, blog_post_contents, repo)
