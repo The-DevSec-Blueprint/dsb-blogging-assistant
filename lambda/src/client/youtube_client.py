@@ -9,6 +9,7 @@ from client.ssm_client import SsmClient
 CHANNEL_NAME = "The DevSec Blueprint (DSB)"
 logging.getLogger().setLevel(logging.INFO)
 
+
 class YouTubeClient:
 
     def __init__(self):
@@ -39,26 +40,28 @@ class YouTubeClient:
                 .execute()["items"][0]
             )
         else:
-            videos = (
+            video_response = (
                 self.youtube_client.search()
                 .list(
                     part="snippet",
                     channelId=channel_id,
                     type="video",
                     order="date",
+                    maxResults=50
                 )
-                .execute()["items"]
+                .execute()
             )
+            videos = video_response["items"]
 
             for _video in videos:
-                logging.info("Video Information: %s", _video)
                 if _video["snippet"]["title"] == video_name:
                     video = _video
-                    break
-        if video is not None:
-            return video["id"]["videoId"], video["snippet"]["title"]
-        else:
-            raise Exception(f"Video {video_name} not found.")
+                break
+        
+        if video is None:
+            raise Exception(f"Video, {video_name}, not found")
+        
+        return video["id"]["videoId"], video["snippet"]["title"]
 
     def get_video_transcript(self, latest_video_id, max_line_width=80):
         transcript = YouTubeTranscriptApi.get_transcript(
@@ -76,4 +79,11 @@ class YouTubeClient:
     def _create_authenticated_client(self):
         ssm_client = SsmClient()
         api_key = ssm_client.get_parameter("/credentials/youtube/auth_token")
+        
         return build("youtube", "v3", developerKey=api_key)
+
+
+if __name__ == "__main__":
+    YouTubeClient().get_video_id(
+        "Four Certifications That Future DevSecOps Engineers Should Get!"
+    )

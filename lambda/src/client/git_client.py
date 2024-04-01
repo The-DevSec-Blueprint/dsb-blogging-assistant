@@ -7,6 +7,7 @@ from client.ssm_client import SsmClient
 
 logging.getLogger().setLevel(logging.INFO)
 
+
 class GitClient:
     def __init__(self):
         self.repo_url = self._create_authenticated_url()
