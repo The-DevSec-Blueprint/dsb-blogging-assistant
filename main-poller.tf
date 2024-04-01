@@ -43,7 +43,7 @@ resource "aws_alb" "application_load_balancer" {
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name        = "dsb-blogging-assistant-target-group"
+  name        = "dsb-ba-target-group"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -87,7 +87,7 @@ data "aws_ecr_image" "poller_repo_lookup" {
   most_recent     = true
 }
 resource "aws_ecr_repository" "poller_repo" {
-  name         = "dsb-blogging-assistant-poller"
+  name         = "dsb-ba-poller"
   force_delete = true
 }
 
@@ -101,7 +101,7 @@ resource "aws_ecs_task_definition" "poller_task" {
 
   container_definitions = jsonencode([
     {
-      name  = "dsb-blogging-assistant-poller-container"
+      name  = "dsb-ba-poller-container"
       image = "${aws_ecr_repository.poller_repo.repository_url}:latest"
       portMappings = [
         {
@@ -114,7 +114,7 @@ resource "aws_ecs_task_definition" "poller_task" {
 }
 
 resource "aws_ecs_service" "poller_service" {
-  name            = "dsb-blogging-assistant-poller-service"
+  name            = "dsb-ba-poller-service"
   cluster         = aws_ecs_cluster.default_ecs_cluster.id
   task_definition = aws_ecs_task_definition.poller_task.arn
   launch_type     = "FARGATE"
@@ -124,7 +124,7 @@ resource "aws_ecs_service" "poller_service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.target_group.arn      # Reference the target group
-    container_name   = "dsb-blogging-assistant-poller-container" # Must always align with the name of the container
+    container_name   = "dsb-ba-poller-container" # Must always align with the name of the container
     container_port   = 80                                        # Specify the container port
   }
 
@@ -134,7 +134,7 @@ resource "aws_ecs_service" "poller_service" {
     assign_public_ip = true
   }
 
-  depends_on = [aws_ecs_task_definition.holiday_task]
+  depends_on = [aws_ecs_task_definition.poller_task]
 }
 
 resource "aws_ecs_cluster" "default_ecs_cluster" {
