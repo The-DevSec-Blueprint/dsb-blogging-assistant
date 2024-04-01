@@ -18,6 +18,10 @@ def main(event, _):
         blog_post_contents = event["blogPostContents"]
         video_name = event["videoName"]
         response = action_commit_blog_to_github(video_name, blog_post_contents)
+    if action_name == "sendEmail":
+        commitId = event["commitId"]
+        branchName = event["branchName"]
+        response = action_send_email(commitId, branchName)
 
     return response
 
@@ -44,3 +48,6 @@ def action_commit_blog_to_github(video_title, blog_post_contents):
     git_client.push(repo)
 
     return {"commitId": commit_info.hexsha, "branchName": branch_name}
+
+def action_send_email(commitId, branchName):
+    pass

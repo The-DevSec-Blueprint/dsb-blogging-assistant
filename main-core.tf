@@ -125,9 +125,17 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "ResultPath": "$.commitBlogToGitHub",
         "Next": "Success"
       },
-      "Success": {
-        "Type": "Succeed"
-      }
+      "Send Email To DSB": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.default.arn}",
+        "Parameters": {
+          "actionName": "sendEmail",
+          "commitId.$": "$.commitBlogToGitHub.commitId",
+          "branchName.$": "$.commitBlogToGitHub.branchName"
+        },
+        "ResultPath": "$.sendEmail",
+        "End": true
+      },
     }
   }
   EOF

@@ -39,7 +39,7 @@ class YouTubeClient:
                 )
                 .execute()["items"][0]
             )
-        else:
+        else: # Search for the last 50 videos (shorts included)
             video_response = (
                 self.youtube_client.search()
                 .list(
