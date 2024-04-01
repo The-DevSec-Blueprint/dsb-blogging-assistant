@@ -4,8 +4,8 @@ from openai import OpenAI
 from client.ssm_client import SsmClient
 
 BASE_QUESTION = """Hello! Could you create a 2000-2500 word detailed blog post 
-in markdown with placeholders for pictures and diagrams, and emojis 
-in first person that are based on the transcript from my video below:\n """
+in markdown with placeholders for pictures and diagrams 
+in first person that are based on the transcript below:\n """
 
 MD_METADATA = """---
 title: TBD
@@ -33,7 +33,7 @@ class OpenAIClient:
                     "content": question,
                 }
             ],
-            model="gpt-3.5-turbo",
+            model="gpt-4-0125-preview",
         )
 
         answer = MD_METADATA + "\n\n" + chat_completion.choices[0].message.content

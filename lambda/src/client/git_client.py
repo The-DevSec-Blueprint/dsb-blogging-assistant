@@ -27,7 +27,7 @@ class GitClient:
 
     def push(self, repo: Repo):
         origin = repo.remote("origin")
-        repo.git.push("--set-upstream", origin.name, repo.active_branch.name)
+        repo.git.push("--set-upstream", "-f", origin.name, repo.active_branch.name)
         logging.info("Push to GitHub successfully!")
 
     def clone(self, branch_name):

@@ -1,4 +1,5 @@
 import textwrap
+import logging
 
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -25,6 +26,7 @@ class YouTubeClient:
         channel_id = search_response["items"][0]["id"]["channelId"]
 
         # Call the search.list method again to retrieve videos for the channel using its ID
+        video = None
         if video_name is None:
             video = (
                 self.youtube_client.search()
@@ -49,11 +51,14 @@ class YouTubeClient:
             )
 
             for _video in videos:
+                logging.info("Video Information: %s", _video)
                 if _video["snippet"]["title"] == video_name:
                     video = _video
                     break
-
-        return video["id"]["videoId"], video["snippet"]["title"]
+        if video is not None:
+            return video["id"]["videoId"], video["snippet"]["title"]
+        else:
+            raise Exception(f"Video {video_name} not found.")
 
     def get_video_transcript(self, latest_video_id, max_line_width=80):
         transcript = YouTubeTranscriptApi.get_transcript(
