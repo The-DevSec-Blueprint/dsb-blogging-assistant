@@ -4,7 +4,7 @@ import logging
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 
-from client.ssm_client import SsmClient
+#from client.ssm_client import SsmClient
 
 CHANNEL_NAME = "The DevSec Blueprint (DSB)"
 logging.getLogger().setLevel(logging.INFO)
@@ -52,11 +52,12 @@ class YouTubeClient:
                 .execute()
             )
             videos = video_response["items"]
-
+            
             for _video in videos:
+                logging.info("%s: %s", _video["id"]["videoId"], _video["snippet"]["title"])
                 if _video["snippet"]["title"] == video_name:
                     video = _video
-                break
+                    break
         
         if video is None:
             raise Exception(f"Video, {video_name}, not found")
@@ -77,9 +78,9 @@ class YouTubeClient:
         return formatted_transcript
 
     def _create_authenticated_client(self):
-        ssm_client = SsmClient()
-        api_key = ssm_client.get_parameter("/credentials/youtube/auth_token")
-        
+        #ssm_client = SsmClient()
+        #api_key = ssm_client.get_parameter("/credentials/youtube/auth_token")
+        api_key = "AIzaSyD2mCGv65LNwX6Wtw0GSmPqj6SwMlm6_Tc"
         return build("youtube", "v3", developerKey=api_key)
 
 
