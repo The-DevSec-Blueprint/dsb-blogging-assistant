@@ -3,6 +3,8 @@ from openai import OpenAI
 
 from client.ssm_client import SsmClient
 
+logging.getLogger().setLevel(logging.INFO)
+
 BASE_QUESTION = """Hello! Could you create a 2000-2500 word detailed blog post 
 in markdown with placeholders for pictures and diagrams 
 in first person that are based on the transcript below:\n """

@@ -7,7 +7,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from client.ssm_client import SsmClient
 
 CHANNEL_NAME = "The DevSec Blueprint (DSB)"
-
+logging.getLogger().setLevel(logging.INFO)
 
 class YouTubeClient:
 

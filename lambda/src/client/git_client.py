@@ -5,6 +5,7 @@ from git.exc import GitCommandError
 
 from client.ssm_client import SsmClient
 
+logging.getLogger().setLevel(logging.INFO)
 
 class GitClient:
     def __init__(self):
