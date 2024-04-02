@@ -3,6 +3,12 @@ resource "aws_sns_topic" "default" {
   name = "dsb-blogging-assistant-yt-topic"
 }
 
+resource "aws_sns_topic_subscription" "email_subscription" {
+  topic_arn = aws_sns_topic.default.arn
+  protocol  = "email"
+  endpoint  = "damien@thedevsecblueprint.com"
+}
+
 # ECR Repository
 data "aws_ecr_image" "lambda_image_lookup" {
   repository_name = aws_ecr_repository.lambda_image.name
