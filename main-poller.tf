@@ -87,7 +87,7 @@ data "aws_ecr_image" "poller_repo_lookup" {
   most_recent     = true
 }
 resource "aws_ecr_repository" "poller_repo" {
-  name         = "dsb-ba-poller"
+  name         = "dsb-blogging-assistant-poller-image"
   force_delete = true
 }
 
