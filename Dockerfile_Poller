@@ -1,11 +1,24 @@
-FROM python
+# Use the official Python base image
+FROM python:3.11-slim
 
-RUN apt-get update -y
-RUN apt-get install git 
+# Set the working directory in the container
+WORKDIR /app
 
-WORKDIR /var/task
-COPY ./src/yt-poller .
+# Copy the dependencies file to the working directory
 COPY requirements.txt .
-RUN pip install -r requirements.txt
 
-#TODO: Complete the rest!
+# Install Flask and other dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the Flask application code to the container
+COPY ./src/yt-poller .
+
+# Expose port 80
+EXPOSE 80
+
+# Set environment variables
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+# Run the Flask application
+CMD ["flask", "run"]

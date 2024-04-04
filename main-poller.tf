@@ -6,11 +6,11 @@ resource "aws_default_vpc" "default_vpc" {
 }
 
 resource "aws_default_subnet" "default_subnet_a" {
-  availability_zone = "us-east-1a"
+  availability_zone = "ca-central-1a"
 }
 
 resource "aws_default_subnet" "default_subnet_b" {
-  availability_zone = "us-east-1b"
+  availability_zone = "ca-central-1b"
 }
 
 resource "aws_security_group" "load_balancer_security_group" {
@@ -81,6 +81,11 @@ resource "aws_security_group" "service_security_group" {
   }
 }
 
+# Log Configuration
+resource "aws_cloudwatch_log_group" "default_poller_lg" {
+  name = "dsb-blogging-assistant-ecr-log-group"
+}
+
 # ECR Repository
 data "aws_ecr_image" "poller_repo_lookup" {
   repository_name = aws_ecr_repository.poller_repo.name
@@ -109,6 +114,14 @@ resource "aws_ecs_task_definition" "poller_task" {
           hostPort      = 80 # Replace if you want to map to a different host port
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = "${aws_cloudwatch_log_group.default_poller_lg.name}"
+          awslogs-region        = "${data.aws_region.current.name}"
+          awslogs-stream-prefix = "streaming"
+        }
+      }
     }
   ])
 }
@@ -123,9 +136,9 @@ resource "aws_ecs_service" "poller_service" {
   force_new_deployment = true
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.target_group.arn      # Reference the target group
-    container_name   = "dsb-ba-poller-container" # Must always align with the name of the container
-    container_port   = 80                                        # Specify the container port
+    target_group_arn = aws_lb_target_group.target_group.arn # Reference the target group
+    container_name   = "dsb-ba-poller-container"            # Must always align with the name of the container
+    container_port   = 80                                   # Specify the container port
   }
 
   network_configuration {

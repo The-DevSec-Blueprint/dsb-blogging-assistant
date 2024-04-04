@@ -9,3 +9,4 @@ pip install -r requirements.txt -t /path/to/deployment/package
 
 # Event Driven PubSubHub
 https://developers.google.com/youtube/v3/guides/push_notifications
+https://github.com/BryanCuneo/yt-to-discord/tree/main?tab=readme-ov-file
