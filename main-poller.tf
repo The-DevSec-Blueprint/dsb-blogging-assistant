@@ -107,7 +107,7 @@ resource "aws_ecs_task_definition" "poller_task" {
   container_definitions = jsonencode([
     {
       name  = "dsb-ba-poller-container"
-      image = "${aws_ecr_repository.poller_repo.repository_url}:latest"
+      image = "${data.aws_ecr_image.poller_repo_lookup.image_uri}"
       portMappings = [
         {
           containerPort = 80 # Replace with the port your app listens on

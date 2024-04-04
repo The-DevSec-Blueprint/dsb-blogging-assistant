@@ -49,5 +49,6 @@ def action_commit_blog_to_github(video_title, blog_post_contents):
 
     return {"commitId": commit_info.hexsha, "branchName": branch_name}
 
+
 def action_send_email(commitId, branchName):
     pass
