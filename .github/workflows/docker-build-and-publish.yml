@@ -22,7 +22,7 @@ jobs:
       run: aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 976556613810.dkr.ecr.ca-central-1.amazonaws.com
 
     - name: Build Docker image
-      run: docker build -t 976556613810.dkr.ecr.ca-central-1.amazonaws.com/dsb-blogging-assistant-poller-image:latest -f Dockerfile_Lambda .
+      run: docker build -t 976556613810.dkr.ecr.ca-central-1.amazonaws.com/dsb-blogging-assistant-lambda-image:latest -f Dockerfile_Lambda .
 
     - name: Push Docker image to ECR
       run: docker push 976556613810.dkr.ecr.ca-central-1.amazonaws.com/dsb-blogging-assistant-lambda-image:latest
