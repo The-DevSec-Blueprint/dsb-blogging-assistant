@@ -104,7 +104,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
           "blogPostContents.$": "$.generateBlogPost.blogPostContents"
         },
         "ResultPath": "$.commitBlogToGitHub",
-        "Next": "Success"
+        "Next": "Send Email To DSB"
       },
       "Send Email To DSB": {
         "Type": "Task",
@@ -116,7 +116,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         },
         "ResultPath": "$.sendEmail",
         "End": true
-      },
+      }
     }
   }
   EOF
