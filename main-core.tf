@@ -3,29 +3,10 @@ resource "aws_sns_topic" "default" {
   name = "dsb-blogging-assistant-yt-topic"
 }
 
-# SSM Parameters
-resource "aws_ssm_parameter" "openai_authtoken" {
-  name  = "/credentials/openai/auth_token"
-  type  = "SecureString"
-  value = var.OPENAI_AUTH_TOKEN
-}
-
-resource "aws_ssm_parameter" "git_username" {
-  name  = "/credentials/git/username"
-  type  = "String"
-  value = var.GIT_USERNAME
-}
-
-resource "aws_ssm_parameter" "git_authtoken" {
-  name  = "/credentials/git/auth_token"
-  type  = "SecureString"
-  value = var.GIT_AUTH_TOKEN
-}
-
-resource "aws_ssm_parameter" "youtube_authtoken" {
-  name  = "/credentials/youtube/auth_token"
-  type  = "SecureString"
-  value = var.YOUTUBE_AUTH_TOKEN
+resource "aws_sns_topic_subscription" "email_subscription" {
+  topic_arn = aws_sns_topic.default.arn
+  protocol  = "email"
+  endpoint  = "damien@thedevsecblueprint.com"
 }
 
 # ECR Repository
@@ -125,9 +106,17 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "ResultPath": "$.commitBlogToGitHub",
         "Next": "Success"
       },
-      "Success": {
-        "Type": "Succeed"
-      }
+      "Send Email To DSB": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.default.arn}",
+        "Parameters": {
+          "actionName": "sendEmail",
+          "commitId.$": "$.commitBlogToGitHub.commitId",
+          "branchName.$": "$.commitBlogToGitHub.branchName"
+        },
+        "ResultPath": "$.sendEmail",
+        "End": true
+      },
     }
   }
   EOF

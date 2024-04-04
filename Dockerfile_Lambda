@@ -1,12 +1,13 @@
-# Dockerfile for Lambda Function - will upload to ECR
-# and use this for executing code
+# Python 3.11 AWS ECR Imaeg
 FROM public.ecr.aws/lambda/python:3.11
 
+# Installs Git and Updates the base image
 RUN yum update -y
 RUN yum install git -y
 
+# Configuring workspace and installing python dependencies
 WORKDIR /var/task
-COPY ./lambda/src .
+COPY ./src/lambda .
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
