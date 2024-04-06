@@ -1,4 +1,7 @@
+import os
 import logging
+import string
+import random
 
 from git import Repo
 from git.exc import GitCommandError
@@ -34,7 +37,9 @@ class GitClient:
 
     def clone(self, branch_name):
         try:
-            repo = Repo.clone_from(self.repo_url, "/tmp")
+            dir_name = f"/tmp/{self._create_folder_name()}"
+            os.mkdir(dir_name)
+            repo = Repo.clone_from(self.repo_url, dir_name)
             logging.info("Repository cloned successfully!")
 
             # Checkout a new branch
@@ -53,3 +58,6 @@ class GitClient:
         repo_url = f"https://{username}:{token}@github.com/The-DevSec-Blueprint/dsb-digest.git"  # Replace with your repository URL
 
         return repo_url
+    
+    def _create_folder_name(self, size=10, chars=string.ascii_uppercase + string.digits):
+        return ''.join(random.choice(chars) for _ in range(size))

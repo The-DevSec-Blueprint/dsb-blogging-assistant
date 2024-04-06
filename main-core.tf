@@ -39,18 +39,10 @@ resource "aws_iam_role" "lambda_exec_role" {
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole", "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"]
   inline_policy {
+    name = "dsb-blogging-assistant-lambda-policy"
     policy = jsonencode({
       Version = "2012-10-17"
       Statement = [
-        {
-          Action = [
-            "ecr:GetAuthorizationToken",
-            "ecr:GetDownloadUrlForLayer",
-            "ecr:BatchGetImage"
-          ]
-          Effect   = "Allow"
-          Resource = "*"
-        },
         {
           Action = [
             "sns:Publish",
