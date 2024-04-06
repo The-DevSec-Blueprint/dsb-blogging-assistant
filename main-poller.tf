@@ -51,6 +51,7 @@ resource "aws_lb_target_group" "target_group" {
 
   health_check {
     path = "/test"
+    interval = 300 # 5 minute interval
   }
 }
 
