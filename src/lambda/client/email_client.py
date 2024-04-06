@@ -29,6 +29,6 @@ class EmailClient:
         """
 
         response = self.sns_client.publish(
-            TopicArn=TOPIC_ARN, SubjectName=subject, Message=html_message
+            TopicArn=TOPIC_ARN, Subject=subject, Message=html_message
         )
         return response
