@@ -1,7 +1,7 @@
 import boto3
 import os
 
-TOPIC_ARN = os.environ.get("TOPIC_ARN")
+TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN")
 REPOSITORY_URL = os.environ.get("REPOSITORY_URL")
 
 
