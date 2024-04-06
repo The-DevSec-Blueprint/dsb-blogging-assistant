@@ -21,7 +21,6 @@ class EmailClient:
             <p><strong>Repository URL:</strong> {repository_url}</p>
             <p><strong>Branch Name:</strong> {branch_name}</p>
             <p><strong>Commit ID:</strong> {commit_id}</p>
-            <p><strong>:</strong> {commit_id}</p>
             <p>Happy writing! 🚀</p>
             <p>Sincerely,<br>DSB Blogging Assistant</p>
         </body>
