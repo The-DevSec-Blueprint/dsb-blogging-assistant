@@ -14,7 +14,7 @@ STEP_FUNCTION_ARN = (
 
 @app.route("/test", methods=["GET"])
 def test():
-    return "what's poppin, shawty", 200
+    return "IT'S ALIVE!!!", 200
 
 
 @app.route("/feed", methods=["GET", "POST"])

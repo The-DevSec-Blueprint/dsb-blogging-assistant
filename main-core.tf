@@ -150,11 +150,11 @@ resource "aws_iam_role" "sfn_iam_role" {
 
   inline_policy {
     name   = "DefaultInlinePolicy"
-    policy = data.aws_iam_policy_document.inline_policy.json
+    policy = data.aws_iam_policy_document.sfn_inline_policy.json
   }
 }
 
-data "aws_iam_policy_document" "inline_policy" {
+data "aws_iam_policy_document" "sfn_inline_policy" {
   statement {
     actions   = ["lambda:InvokeFunction"]
     resources = [aws_lambda_function.default.arn]

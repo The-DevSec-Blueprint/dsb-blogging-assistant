@@ -96,13 +96,46 @@ resource "aws_ecr_repository" "poller_repo" {
   force_delete = true
 }
 
+data "aws_iam_policy_document" "ecs_inline_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "states:StartExecution",
+    ]
+    resources = [
+      aws_sfn_state_machine.default_sfn.arn,
+    ]
+  }
+}
+data "aws_iam_policy_document" "task_def_assume_role_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole",
+    ]
+    principals {
+      type = "Service"
+      identifiers = [ "ecs-tasks.amazonaws.com" ]
+    }
+  }
+}
+resource "aws_iam_role" "task_definition_role" {
+  name = "dsb-ba-poller-ecs-taskdef-exec"
+  assume_role_policy = data.aws_iam_policy_document.task_def_assume_role_policy.json
+  inline_policy {
+    name = "dsb-ba-poller-inline-policy"
+    policy = data.aws_iam_policy_document.ecs_inline_policy.json
+  }
+}
+
 resource "aws_ecs_task_definition" "poller_task" {
   family                   = "poller-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256" # CPU units for the task
   memory                   = "512" # Memory for the task in MiB
-  execution_role_arn       = "arn:aws:iam::976556613810:role/ecsTaskExecutionRole"
+  execution_role_arn       = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ecsTaskExecutionRole" # SVC Execution Role
+  task_role_arn = aws_iam_role.task_definition_role.arn
 
   container_definitions = jsonencode([
     {
