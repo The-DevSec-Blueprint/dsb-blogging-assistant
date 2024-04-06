@@ -1,9 +1,15 @@
+import json
+import boto3
 import xmltodict
 
 from flask import Flask, request
 from xml.parsers.expat import ExpatError
 
 app = Flask(__name__)
+
+STEP_FUNCTION_ARN = (
+    "arn:aws:states:ca-central-1:976556613810:stateMachine:dsb-blogging-assistant-sfn"
+)
 
 
 @app.route("/test", methods=["GET"])
@@ -31,14 +37,24 @@ def feed():
         video_title = xml_dict["feed"]["entry"]["title"]
 
         # Trigger Step Function by passing in the video title and URL
-        # TODO: Write a private function that calls Step Functions
+        sfn_input = {
+            "videoName": video_title,
+            "videoUrl": video_url,
+        }
+
+        sfn_client = boto3.client("stepfunctions")
+        response = sfn_client.start_execution(
+            stateMachineArn=STEP_FUNCTION_ARN,
+            input=json.dumps(sfn_input),
+        )
 
     except (ExpatError, LookupError):
         # request.data contains malformed XML or no XML at all, return FORBIDDEN.
         return "", 403
 
-    # Everything is good, return NO CONTENT.
-    return (video_url, video_title), 200
+    # Everything is good, return SFN Execution Response & HTTP 200.
+    return response, 200
+
 
 if __name__ == "__main__":
     app.run()
