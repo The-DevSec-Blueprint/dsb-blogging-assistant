@@ -1,14 +1,14 @@
+
+import os
 import textwrap
 import logging
 
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 
-# from client.ssm_client import SsmClient
-
-CHANNEL_NAME = "The DevSec Blueprint (DSB)"
 logging.getLogger().setLevel(logging.INFO)
 
+CHANNEL_NAME = os.environ.get("YOUTUBE_CHANNEL_NAME")
 
 class YouTubeClient:
 

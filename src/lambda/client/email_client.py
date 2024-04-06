@@ -13,7 +13,7 @@ class EmailClient:
     def send_email(self, commit_id, branch_name, video_name):
         # Create Email Message
         subject = f"Blog Post Published for Video: {video_name}"
-        repository_url = REPOSITORY_URL + "/tree" + branch_name
+        repository_url = REPOSITORY_URL + "/tree/" + branch_name
         html_message = f"""
         <html>
         <body>
