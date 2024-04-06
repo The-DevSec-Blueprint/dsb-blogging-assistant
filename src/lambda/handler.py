@@ -3,6 +3,7 @@ import hashlib
 from client.youtube_client import YouTubeClient
 from client.openai_client import OpenAIClient
 from client.git_client import GitClient
+from client.email_client import EmailClient
 
 
 def main(event, _):
@@ -21,7 +22,8 @@ def main(event, _):
     if action_name == "sendEmail":
         commitId = event["commitId"]
         branchName = event["branchName"]
-        response = action_send_email(commitId, branchName)
+        video_name = event["videoName"]
+        response = action_send_email(commitId, branchName, video_name)
 
     return response
 
@@ -50,5 +52,7 @@ def action_commit_blog_to_github(video_title, blog_post_contents):
     return {"commitId": commit_info.hexsha, "branchName": branch_name}
 
 
-def action_send_email(commitId, branchName):
-    pass
+def action_send_email(commitId, branchName, video_name):
+    email_client = EmailClient()
+    response = email_client.send_email(commitId, branchName, video_name)
+    return {"messageId": response["MessageId"]}

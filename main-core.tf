@@ -50,6 +50,13 @@ resource "aws_iam_role" "lambda_exec_role" {
           ]
           Effect   = "Allow"
           Resource = "*"
+        },
+        {
+          Action = [
+            "sns:Publish",
+          ]
+          Effect   = "Allow"
+          Resource = "${aws_sns_topic.default.arn}"
         }
       ]
     })
@@ -112,7 +119,8 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Parameters": {
           "actionName": "sendEmail",
           "commitId.$": "$.commitBlogToGitHub.commitId",
-          "branchName.$": "$.commitBlogToGitHub.branchName"
+          "branchName.$": "$.commitBlogToGitHub.branchName",
+          "videoName.$": "$.videoName"
         },
         "ResultPath": "$.sendEmail",
         "End": true
