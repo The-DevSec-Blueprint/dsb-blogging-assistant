@@ -58,6 +58,8 @@ class GitClient:
         repo_url = f"https://{username}:{token}@github.com/The-DevSec-Blueprint/dsb-digest.git"  # Replace with your repository URL
 
         return repo_url
-    
-    def _create_folder_name(self, size=10, chars=string.ascii_uppercase + string.digits):
-        return ''.join(random.choice(chars) for _ in range(size))
+
+    def _create_folder_name(
+        self, size=10, chars=string.ascii_uppercase + string.digits
+    ):
+        return "".join(random.choice(chars) for _ in range(size))

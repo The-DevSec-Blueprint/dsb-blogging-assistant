@@ -15,16 +15,12 @@ class EmailClient:
         subject = f"Blog Post Published for Video: {video_name}"
         repository_url = REPOSITORY_URL + "/tree/" + branch_name
         html_message = f"""
-        <html>
-        <body>
-            <p>Your draft blog post for the following video, {video_name}, has been published to the dsb-digest! The information needed to find the post are highlighted below:</p>
-            <p><strong>Repository URL:</strong> {repository_url}</p>
-            <p><strong>Branch Name:</strong> {branch_name}</p>
-            <p><strong>Commit ID:</strong> {commit_id}</p>
-            <p>Happy writing! 🚀</p>
-            <p>Sincerely,<br>DSB Blogging Assistant</p>
-        </body>
-        </html>
+Your draft blog post for the following video, {video_name}, has been published to the dsb-digest! The information needed to find the post are highlighted below:\n\n
+Repository URL: {repository_url}\n
+Branch Name: {branch_name}\n
+Commit ID: {commit_id}\n\n
+Happy writing! 🚀\n
+Sincerely,\nDSB Blogging Assistant\n
         """
 
         response = self.sns_client.publish(

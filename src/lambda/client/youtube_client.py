@@ -1,4 +1,3 @@
-
 import os
 import textwrap
 import logging
@@ -9,6 +8,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 logging.getLogger().setLevel(logging.INFO)
 
 CHANNEL_NAME = os.environ.get("YOUTUBE_CHANNEL_NAME")
+
 
 class YouTubeClient:
 
