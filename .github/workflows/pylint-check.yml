@@ -1,0 +1,21 @@
+name: "Pylint Check - Python"
+
+on:
+  workflow_call:
+
+jobs:
+  pylint_check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2  # This action sets up Python
+  
+    - name: Install Dependencies
+      run: pip install -r requirements.txt  # Install your Python dependencies
+  
+    - name: Lint Check
+      run: pylint src/ --disable import-error

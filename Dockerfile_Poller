@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the Flask application code to the container
-COPY ./src/yt-poller .
+COPY ./src/yt_poller .
 
 # Expose port 80
 EXPOSE 80

@@ -9,9 +9,9 @@ from client.ssm_client import SsmClient
 
 logging.getLogger().setLevel(logging.INFO)
 
-BASE_QUESTION = """Hello! Could you create a 2000-2500 word detailed blog post 
-in markdown with placeholders for pictures and diagrams 
-in first person that are based on the transcript below:\n """
+BASE_QUESTION = """Hello! Could you create a 2000-2500 word detailed blog post\n
+in markdown with placeholders for pictures and diagrams\n
+in first person that are based on the transcript below:\n"""
 
 MD_METADATA = """---
 title: TBD
@@ -25,7 +25,7 @@ saveAsDraft: true
 """
 
 
-class OpenAIClient:
+class OpenAIClient:  # pylint: disable=too-few-public-methods
     """
     This class is responsible for interacting with the OpenAI API.
     """

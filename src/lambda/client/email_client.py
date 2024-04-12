@@ -2,14 +2,14 @@
 Email client module for sending emails to the user when a blog post is published.
 """
 
-import boto3
 import os
+import boto3
 
 TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN")
 REPOSITORY_URL = os.environ.get("REPOSITORY_URL")
 
 
-class EmailClient:
+class EmailClient:  # pylint: disable=too-few-public-methods
     """
     This class is responsible for sending emails to the user when a blog post is published.
     """
@@ -25,7 +25,8 @@ class EmailClient:
         subject = f"Blog Post Published for Video: {video_name}"
         repository_url = REPOSITORY_URL + "/tree/" + branch_name
         html_message = f"""
-Your draft blog post for the following video, {video_name}, has been published to the dsb-digest! The information needed to find the post are highlighted below:\n\n
+Your draft blog post for the following video, {video_name}, has been published to the dsb-digest!\n
+The information needed to find the post are highlighted below:\n\n
 Repository URL: {repository_url}\n
 Branch Name: {branch_name}\n
 Commit ID: {commit_id}\n\n

@@ -15,7 +15,7 @@ logging.getLogger().setLevel(logging.INFO)
 CHANNEL_NAME = os.environ.get("YOUTUBE_CHANNEL_NAME")
 
 
-class YouTubeClient:
+class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
     """
     Class for interacting with the YouTube API.
     """

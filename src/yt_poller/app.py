@@ -1,9 +1,15 @@
+"""
+Default application for YouTube event handling.
+This application accepts requests from YT's pubsubhubbub.
+"""
+
 import json
+from xml.parsers.expat import ExpatError
+
 import boto3
 import xmltodict
 
 from flask import Flask, request
-from xml.parsers.expat import ExpatError
 
 app = Flask(__name__)
 
@@ -14,12 +20,18 @@ STEP_FUNCTION_ARN = (
 
 @app.route("/test", methods=["GET"])
 def test():
+    """
+    This function is used to test the application to ensure
+    it is working properly, and available.
+    """
     return "IT'S ALIVE!!!", 200
 
 
 @app.route("/feed", methods=["GET", "POST"])
 def feed():
-    """Accept and parse requests from YT's pubsubhubbub.
+    """
+    This function is used to handle incoming YT events.
+    Accept and parse requests from YT's pubsubhubbub.
     https://developers.google.com/youtube/v3/guides/push_notifications
     """
 

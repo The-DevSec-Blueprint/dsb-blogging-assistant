@@ -30,7 +30,7 @@ class GitClient:
 
         path = repo.working_tree_dir
 
-        with open(f"{path}/rename_file.md", "w+") as f:
+        with open(f"{path}/rename_file.md", "w+", encoding="utf-8") as f:
             f.write(md_file_content)
 
         repo.index.add("rename_file.md")
@@ -69,7 +69,7 @@ class GitClient:
 
             return repo
         except GitCommandError as e:
-            logging.error(f"Error cloning repository: {e}")
+            logging.error("Error cloning repository: %s", str(e))
             raise e
 
     def _create_authenticated_url(self):
@@ -79,7 +79,9 @@ class GitClient:
 
         username = SsmClient().get_parameter(name="/credentials/git/username")
         token = SsmClient().get_parameter(name="/credentials/git/auth_token")
-        repo_url = f"https://{username}:{token}@github.com/The-DevSec-Blueprint/dsb-digest.git"  # Replace with your repository URL
+        repo_url = (
+            f"https://{username}:{token}@github.com/The-DevSec-Blueprint/dsb-digest.git"
+        )
 
         return repo_url
 

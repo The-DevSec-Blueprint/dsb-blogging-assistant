@@ -5,7 +5,7 @@ Module for interacting with SSM Parameter Store.
 import boto3
 
 
-class SsmClient:
+class SsmClient:  # pylint: disable=too-few-public-methods
     """
     Class for interacting with SSM Parameter Store.
     """

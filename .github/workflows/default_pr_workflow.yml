@@ -5,7 +5,14 @@ on:
   workflow_dispatch:
 
 jobs:
+    format-check:
+      uses: ./.github/workflows/black-fmt-check.yml
+    linting-check:
+      uses: ./.github/workflows/pylint-check.yml
     build-docker-image:
+        needs: 
+          - format-check
+          - linting-check
         uses: ./.github/workflows/docker-build.yml
         secrets: inherit
     run-terraform-plan:

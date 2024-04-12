@@ -28,10 +28,10 @@ def main(event, _):
         video_name = event["videoName"]
         response = action_commit_blog_to_github(video_name, blog_post_contents)
     if action_name == "sendEmail":
-        commitId = event["commitId"]
-        branchName = event["branchName"]
+        commit_id = event["commitId"]
+        branch_name = event["branchName"]
         video_name = event["videoName"]
-        response = action_send_email(commitId, branchName, video_name)
+        response = action_send_email(commit_id, branch_name, video_name)
 
     return response
 
@@ -56,7 +56,8 @@ def action_generate_blog_post(video_id):
 
 def action_commit_blog_to_github(video_title, blog_post_contents):
     """
-    This function takes in a video title and blog post contents and returns the commit ID and branch name.
+    This function takes in a video title and blog post contents
+    and returns the commit ID and branch name.
     """
     git_client = GitClient()
 
@@ -69,10 +70,10 @@ def action_commit_blog_to_github(video_title, blog_post_contents):
     return {"commitId": commit_info.hexsha, "branchName": branch_name}
 
 
-def action_send_email(commitId, branchName, video_name):
+def action_send_email(commit_id, branch_name, video_name):
     """
     This function takes in a commit ID, branch name, and video name and sends an email.
     """
     email_client = EmailClient()
-    response = email_client.send_email(commitId, branchName, video_name)
+    response = email_client.send_email(commit_id, branch_name, video_name)
     return {"messageId": response["MessageId"]}
