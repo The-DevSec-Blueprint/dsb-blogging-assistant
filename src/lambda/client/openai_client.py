@@ -1,3 +1,7 @@
+"""
+Module for  interacting with OpenAI APIs.
+"""
+
 import logging
 from openai import OpenAI
 
@@ -22,10 +26,18 @@ saveAsDraft: true
 
 
 class OpenAIClient:
+    """
+    This class is responsible for interacting with the OpenAI API.
+    """
+
     def __init__(self) -> None:
         self.openai_client = self._create_authenticated_client()
 
     def ask(self, transcript):
+        """
+        This function sends a question to the OpenAI API and returns the response.
+        """
+
         question = BASE_QUESTION + transcript + "\n\n"
 
         chat_completion = self.openai_client.chat.completions.create(
@@ -44,5 +56,9 @@ class OpenAIClient:
         return answer
 
     def _create_authenticated_client(self):
+        """
+        This function creates an authenticated OpenAI client.
+        """
+
         auth_token = SsmClient().get_parameter(name="/credentials/openai/auth_token")
         return OpenAI(api_key=auth_token)

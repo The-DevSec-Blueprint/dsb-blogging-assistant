@@ -1,3 +1,7 @@
+"""
+Git client for checking in blog posts into the dsb-digest repository.
+"""
+
 import os
 import logging
 import string
@@ -12,10 +16,18 @@ logging.getLogger().setLevel(logging.INFO)
 
 
 class GitClient:
+    """
+    Git client class for checking in blog posts into the dsb-digest repository.
+    """
+
     def __init__(self):
         self.repo_url = self._create_authenticated_url()
 
     def commit(self, video_title, md_file_content, repo: Repo):
+        """
+        This function commits the blog post to the dsb-digest repository.
+        """
+
         path = repo.working_tree_dir
 
         with open(f"{path}/rename_file.md", "w+") as f:
@@ -31,11 +43,19 @@ class GitClient:
         return commit_info
 
     def push(self, repo: Repo):
+        """
+        This function pushes the changes to the dsb-digest repository.
+        """
+
         origin = repo.remote("origin")
         repo.git.push("--set-upstream", "-f", origin.name, repo.active_branch.name)
         logging.info("Push to GitHub successfully!")
 
     def clone(self, branch_name):
+        """
+        This function clones the dsb-digest repository.
+        """
+
         try:
             dir_name = f"/tmp/{self._create_folder_name()}"
             os.mkdir(dir_name)
@@ -53,6 +73,10 @@ class GitClient:
             raise e
 
     def _create_authenticated_url(self):
+        """
+        This function creates an authenticated URL for the dsb-digest repository.
+        """
+
         username = SsmClient().get_parameter(name="/credentials/git/username")
         token = SsmClient().get_parameter(name="/credentials/git/auth_token")
         repo_url = f"https://{username}:{token}@github.com/The-DevSec-Blueprint/dsb-digest.git"  # Replace with your repository URL
@@ -62,4 +86,8 @@ class GitClient:
     def _create_folder_name(
         self, size=10, chars=string.ascii_uppercase + string.digits
     ):
+        """
+        Private function to create a random folder name to temporarily clone the repository.
+        """
+
         return "".join(random.choice(chars) for _ in range(size))

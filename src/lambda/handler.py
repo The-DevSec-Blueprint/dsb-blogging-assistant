@@ -1,3 +1,7 @@
+""" 
+Main handler for the Lambda function.
+"""
+
 import hashlib
 
 from client.youtube_client import YouTubeClient
@@ -7,6 +11,10 @@ from client.email_client import EmailClient
 
 
 def main(event, _):
+    """
+    This is the main entry point for the Lambda function.
+    It takes in the event and context as arguments, and returns the response.
+    """
     action_name = event["actionName"]
 
     if action_name == "getVideoId":
@@ -29,18 +37,27 @@ def main(event, _):
 
 
 def action_get_video_id(video_name):
+    """
+    This function takes in a video name and returns the video ID and video name.
+    """
     youtube_client = YouTubeClient()
     video_id, video_name = youtube_client.get_video_id(video_name)
     return {"videoId": video_id, "videoName": video_name}
 
 
 def action_generate_blog_post(video_id):
+    """
+    This function takes in a video ID and returns the blog post contents.
+    """
     transcript = YouTubeClient().get_video_transcript(video_id)
     markdown_blog = OpenAIClient().ask(transcript)
     return {"blogPostContents": markdown_blog}
 
 
 def action_commit_blog_to_github(video_title, blog_post_contents):
+    """
+    This function takes in a video title and blog post contents and returns the commit ID and branch name.
+    """
     git_client = GitClient()
 
     branch_name = hashlib.sha256(video_title.encode("utf-8")).hexdigest()
@@ -53,6 +70,9 @@ def action_commit_blog_to_github(video_title, blog_post_contents):
 
 
 def action_send_email(commitId, branchName, video_name):
+    """
+    This function takes in a commit ID, branch name, and video name and sends an email.
+    """
     email_client = EmailClient()
     response = email_client.send_email(commitId, branchName, video_name)
     return {"messageId": response["MessageId"]}

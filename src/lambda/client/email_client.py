@@ -1,3 +1,7 @@
+"""
+Email client module for sending emails to the user when a blog post is published.
+"""
+
 import boto3
 import os
 
@@ -6,11 +10,17 @@ REPOSITORY_URL = os.environ.get("REPOSITORY_URL")
 
 
 class EmailClient:
+    """
+    This class is responsible for sending emails to the user when a blog post is published.
+    """
 
     def __init__(self) -> None:
         self.sns_client = boto3.client("sns")
 
     def send_email(self, commit_id, branch_name, video_name):
+        """
+        This function sends an email to the user when a blog post is published.
+        """
         # Create Email Message
         subject = f"Blog Post Published for Video: {video_name}"
         repository_url = REPOSITORY_URL + "/tree/" + branch_name
