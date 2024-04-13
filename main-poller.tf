@@ -50,7 +50,7 @@ resource "aws_lb_target_group" "target_group" {
   vpc_id      = aws_default_vpc.default_vpc.id # default VPC
 
   health_check {
-    path = "/test"
+    path     = "/test"
     interval = 300 # 5 minute interval
   }
 }
@@ -97,6 +97,28 @@ resource "aws_ecr_repository" "poller_repo" {
   force_delete = true
 }
 
+resource "aws_ecr_lifecycle_policy" "poller_image_lifecycle_policy" {
+  repository = aws_ecr_repository.poller_repo.name
+
+  # https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html
+  policy = jsonencode({
+    rules = [
+      {
+        rule_priority = 1
+        description   = "Keep only one untagged image, expire all others"
+        selection = {
+          tag_status   = "untagged"
+          count_type   = "imageCountMoreThan"
+          count_number = 3
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
+}
+
 data "aws_iam_policy_document" "ecs_inline_policy" {
   statement {
     effect = "Allow"
@@ -115,16 +137,16 @@ data "aws_iam_policy_document" "task_def_assume_role_policy" {
       "sts:AssumeRole",
     ]
     principals {
-      type = "Service"
-      identifiers = [ "ecs-tasks.amazonaws.com" ]
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
     }
   }
 }
 resource "aws_iam_role" "task_definition_role" {
-  name = "dsb-ba-poller-ecs-taskdef-exec"
+  name               = "dsb-ba-poller-ecs-taskdef-exec"
   assume_role_policy = data.aws_iam_policy_document.task_def_assume_role_policy.json
   inline_policy {
-    name = "dsb-ba-poller-inline-policy"
+    name   = "dsb-ba-poller-inline-policy"
     policy = data.aws_iam_policy_document.ecs_inline_policy.json
   }
 }
@@ -133,10 +155,10 @@ resource "aws_ecs_task_definition" "poller_task" {
   family                   = "poller-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256" # CPU units for the task
-  memory                   = "512" # Memory for the task in MiB
+  cpu                      = "256"                                                                                   # CPU units for the task
+  memory                   = "512"                                                                                   # Memory for the task in MiB
   execution_role_arn       = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ecsTaskExecutionRole" # SVC Execution Role
-  task_role_arn = aws_iam_role.task_definition_role.arn
+  task_role_arn            = aws_iam_role.task_definition_role.arn
 
   container_definitions = jsonencode([
     {

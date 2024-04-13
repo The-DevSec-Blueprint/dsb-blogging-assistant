@@ -20,6 +20,29 @@ resource "aws_ecr_repository" "lambda_image" {
   force_delete = true
 }
 
+resource "aws_ecr_lifecycle_policy" "lambda_image_lifecycle_policy" {
+  repository = aws_ecr_repository.lambda_image.name
+
+  # https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html
+  policy = jsonencode({
+    rules = [
+      {
+        rule_priority = 1
+        description   = "Keep only one untagged image, expire all others"
+        selection = {
+          tag_status   = "untagged"
+          count_type   = "imageCountMoreThan"
+          count_number = 3
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
+}
+
+
 # Lambda Function
 resource "aws_iam_role" "lambda_exec_role" {
   name = "dsb-blogging-assistant-lambda-exec-role"
@@ -65,8 +88,8 @@ resource "aws_lambda_function" "default" {
 
   environment {
     variables = {
-      SNS_TOPIC_ARN = aws_sns_topic.default.arn
-      REPOSITORY_URL = "https://github.com/The-DevSec-Blueprint/dsb-digest"
+      SNS_TOPIC_ARN        = aws_sns_topic.default.arn
+      REPOSITORY_URL       = "https://github.com/The-DevSec-Blueprint/dsb-digest"
       YOUTUBE_CHANNEL_NAME = "The DevSec Blueprint (DSB)"
     }
   }
