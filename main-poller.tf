@@ -101,22 +101,24 @@ resource "aws_ecr_lifecycle_policy" "poller_image_lifecycle_policy" {
   repository = aws_ecr_repository.poller_repo.name
 
   # https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html
-  policy = jsonencode({
-    rules = [
-      {
-        rule_priority = 1
-        description   = "Keep only one untagged image, expire all others"
-        selection = {
-          tag_status   = "untagged"
-          count_type   = "imageCountMoreThan"
-          count_number = 3
+  policy = <<EOF
+{
+    "rules": [
+        {
+            "rulePriority": 1,
+            "description": "Keep only one untagged image, expire all others",
+            "selection": {
+                "tagStatus": "untagged",
+                "countType": "imageCountMoreThan",
+                "countNumber": 1
+            },
+            "action": {
+                "type": "expire"
+            }
         }
-        action = {
-          type = "expire"
-        }
-      }
     ]
-  })
+}
+  EOF
 }
 
 data "aws_iam_policy_document" "ecs_inline_policy" {
