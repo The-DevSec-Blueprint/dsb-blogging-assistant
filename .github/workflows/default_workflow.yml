@@ -1,4 +1,4 @@
-name: "Pull Request Workflow"
+name: "Default Workflow (main)"
 
 on:
   push:
