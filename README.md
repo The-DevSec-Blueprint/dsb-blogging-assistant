@@ -41,7 +41,7 @@ So, when we _(and I mean me)_ make updates to the codebase, the GitHub action wi
 #### Flow Diagram Explained
 
 1. Damien uploads a new video to his YouTube channel.
-1. He publishes the viedo, and the PubSubHubBub process will send an event to the subscribed ECS cluster or service called YouTube Poller.
+1. He publishes the video, and the PubSubHubBub process will send an event to the subscribed ECS cluster or service called YouTube Poller.
 1. The poller will take the key information, like video title and url, and trigger the step function by passing in the payload.
 1. The step function will trigger the lambda function and execute a series of states.
 1. First state: The transcript from the video will be downloaded.
