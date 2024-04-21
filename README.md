@@ -66,7 +66,7 @@ You're done.
 ## Engineering Notes
 
 - If you forget how to configure your Terraform Cloud account and map it to your repository, just take a look at this page: <https://developer.hashicorp.com/terraform/tutorials/automation/github-actions>
-- If you also forget on how to use PubSubHubBub to subscribe to Youtube, you'll perform the following steps:
+- You'll need to resubscribe to pubsubhubbub every 5 days, or every time you're about to publish a video due to leasing time constraints:
   - Go to this document: <https://developers.google.com/youtube/v3/guides/push_notifications>
   - Fill out the payload with this information:
     - Callback URL - the URL you copied in step 3, followed by /feed. Ex: <http://1829c24236ed.ngrok.io/feed>
