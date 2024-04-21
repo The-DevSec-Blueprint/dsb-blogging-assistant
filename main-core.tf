@@ -92,7 +92,7 @@ resource "aws_lambda_function" "default" {
     variables = {
       SNS_TOPIC_ARN        = aws_sns_topic.default.arn
       REPOSITORY_URL       = "https://github.com/The-DevSec-Blueprint/dsb-digest"
-      YOUTUBE_CHANNEL_NAME = "The DevSec Blueprint (DSB)"
+      YOUTUBE_CHANNEL_NAME = "Damien Burks | The DevSec Blueprint (DSB)"
     }
   }
   depends_on = [aws_ecr_repository.lambda_image]
