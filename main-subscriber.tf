@@ -45,8 +45,8 @@ resource "aws_lambda_function" "sub_lambda_func" {
 
   environment {
     variables = {
-      TOPIC_URL    = "http://${aws_alb.application_load_balancer.dns_name}/feed"
-      CALLBACK_URL = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=UCOSYuY_e_r5GtVdlCVwY83Q"
+      CALLBACK_URL = "http://${aws_alb.application_load_balancer.dns_name}/feed"
+      TOPIC_URL    = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=UCOSYuY_e_r5GtVdlCVwY83Q"
     }
   }
   depends_on = [aws_ecr_repository.sub_lambda_image]
