@@ -29,6 +29,7 @@ def main(event, _):
         "hub.topic": TOPIC_URL,
         "hub.callback": CALLBACK_URL,
         "hub.verify": "async",  # Asynchronous verification method
+        "hub.lease_seconds": "86400",  # Lease for 1 day
     }
 
     # Make a POST request to subscribe to the topic

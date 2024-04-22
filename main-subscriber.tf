@@ -49,5 +49,18 @@ resource "aws_lambda_function" "sub_lambda_func" {
       TOPIC_URL    = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=UCOSYuY_e_r5GtVdlCVwY83Q"
     }
   }
-  depends_on = [aws_ecr_repository.sub_lambda_image]
+  depends_on = [aws_ecr_repository.sub_lambda_image, aws_ecs_task_definition.poller_task]
+}
+
+# Eventbridge Rules
+resource "aws_cloudwatch_event_rule" "sub_lambda_event_rule" {
+  name                = "dsb-blogging-assistant-sub-lambda-event-rule"
+  description         = "Trigger the lambda function every day"
+  schedule_expression = "rate(1 day)"
+}
+
+resource "aws_cloudwatch_event_target" "sub_lambda_event_target" {
+  rule      = aws_cloudwatch_event_rule.sub_lambda_event_rule.name
+  target_id = "dsb-blogging-assistant-sub-lambda-event-target"
+  arn       = aws_lambda_function.sub_lambda_func.arn
 }
