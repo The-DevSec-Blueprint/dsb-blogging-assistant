@@ -7,7 +7,7 @@ RUN yum install git -y
 
 # Configuring workspace and installing python dependencies
 WORKDIR /var/task
-COPY ./src/lambda .
+COPY ./src/subscriber .
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 

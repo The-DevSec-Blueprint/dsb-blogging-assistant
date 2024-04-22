@@ -10,18 +10,18 @@ resource "aws_sns_topic_subscription" "email_subscription" {
 }
 
 # ECR Repository
-data "aws_ecr_image" "lambda_image_lookup" {
-  repository_name = aws_ecr_repository.lambda_image.name
+data "aws_ecr_image" "core_lambda_image_lookup" {
+  repository_name = aws_ecr_repository.core_lambda_image.name
   most_recent     = true
 }
 
-resource "aws_ecr_repository" "lambda_image" {
-  name         = "dsb-blogging-assistant-lambda-image"
+resource "aws_ecr_repository" "core_lambda_image" {
+  name         = "dsb-blogging-assistant-core-lambda-image"
   force_delete = true
 }
 
-resource "aws_ecr_lifecycle_policy" "lambda_image_lifecycle_policy" {
-  repository = aws_ecr_repository.lambda_image.name
+resource "aws_ecr_lifecycle_policy" "core_lambda_image_lifecycle_policy" {
+  repository = aws_ecr_repository.core_lambda_image.name
 
   # https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html
   policy = <<EOF
@@ -84,7 +84,7 @@ resource "aws_lambda_function" "default" {
   function_name = "dsb-blogging-assistant-lambda"
   role          = aws_iam_role.lambda_exec_role.arn
 
-  image_uri    = data.aws_ecr_image.lambda_image_lookup.image_uri
+  image_uri    = data.aws_ecr_image.core_lambda_image_lookup.image_uri
   timeout      = 120 # 2 minutes
   package_type = "Image"
 
@@ -95,7 +95,7 @@ resource "aws_lambda_function" "default" {
       YOUTUBE_CHANNEL_NAME = "Damien Burks | The DevSec Blueprint (DSB)"
     }
   }
-  depends_on = [aws_ecr_repository.lambda_image]
+  depends_on = [aws_ecr_repository.core_lambda_image]
 }
 
 # Step Function

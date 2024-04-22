@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Build Docker Images
 
 on:
   workflow_call:
@@ -22,7 +22,7 @@ jobs:
       run: aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 976556613810.dkr.ecr.ca-central-1.amazonaws.com
 
     - name: Build Docker image
-      run: docker build -t 976556613810.dkr.ecr.ca-central-1.amazonaws.com/dsb-blogging-assistant-lambda-image:latest -f Dockerfile_Lambda .
+      run: docker build -t 976556613810.dkr.ecr.ca-central-1.amazonaws.com/dsb-blogging-assistant-lambda-image:latest -f Dockerfile_Core .
   build_poller_image:
     runs-on: ubuntu-latest
 
@@ -42,3 +42,22 @@ jobs:
 
     - name: Build Docker image
       run: docker build -t 976556613810.dkr.ecr.ca-central-1.amazonaws.com/dsb-blogging-assistant-poller-image:latest -f Dockerfile_Poller .
+  build_sub_lambda_image:
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+  
+      - name: Login to Amazon ECR
+        run: aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 976556613810.dkr.ecr.ca-central-1.amazonaws.com
+  
+      - name: Build Docker image
+        run: docker build -t 976556613810.dkr.ecr.ca-central-1.amazonaws.com/dsb-blogging-assistant-sub-lambda-image:latest -f Dockerfile_Subscriber .
