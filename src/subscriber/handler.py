@@ -11,6 +11,7 @@ CALLBACK_URL = environ.get("CALLBACK_URL")
 
 
 def main(_):
+    # pylint: disable=broad-exception-raised
     """
     Main function for subscribing to PubSubHubBub
     """
@@ -23,7 +24,7 @@ def main(_):
     }
 
     # Make a POST request to subscribe to the topic
-    response = requests.post(HUB_ENDPOINT, data=params)
+    response = requests.post(HUB_ENDPOINT, data=params, timeout=5)
 
     # Check the response
     if response.status_code == 202:

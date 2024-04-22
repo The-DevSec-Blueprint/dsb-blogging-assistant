@@ -80,7 +80,7 @@ resource "aws_iam_role" "lambda_exec_role" {
   }
 }
 
-resource "aws_lambda_function" "default" {
+resource "aws_lambda_function" "core_lambda_func" {
   function_name = "dsb-blogging-assistant-lambda"
   role          = aws_iam_role.lambda_exec_role.arn
 
@@ -108,7 +108,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
     "States": {
       "Get Video Information": {
         "Type": "Task",
-        "Resource": "${aws_lambda_function.default.arn}",
+        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
         "Parameters": {
           "actionName": "getVideoId",
           "videoName.$": "$.videoName"
@@ -118,7 +118,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
       },
       "Generate Blog Post with OpenAI": {
         "Type": "Task",
-        "Resource": "${aws_lambda_function.default.arn}",
+        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
         "Parameters": {
           "actionName": "generateBlogPost",
           "videoId.$": "$.getVideoId.videoId"
@@ -128,7 +128,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
       },
       "Publish MD Blog to GitHub": {
         "Type": "Task",
-        "Resource": "${aws_lambda_function.default.arn}",
+        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
         "Parameters": {
           "actionName": "commitBlogToGitHub",
           "videoName.$": "$.videoName",
@@ -139,7 +139,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
       },
       "Send Email To DSB": {
         "Type": "Task",
-        "Resource": "${aws_lambda_function.default.arn}",
+        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
         "Parameters": {
           "actionName": "sendEmail",
           "commitId.$": "$.commitBlogToGitHub.commitId",
@@ -189,7 +189,7 @@ resource "aws_iam_role" "sfn_iam_role" {
 data "aws_iam_policy_document" "sfn_inline_policy" {
   statement {
     actions   = ["lambda:InvokeFunction"]
-    resources = [aws_lambda_function.default.arn]
+    resources = [aws_lambda_function.core_lambda_func.arn]
   }
 
   statement {
