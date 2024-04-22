@@ -4,6 +4,8 @@
 
 ## Overview
 
+>**NOTE**: Update documentation to add in the subscriber event job that runs every 24 hours.
+
 This is the super duper awesome framework that I've built to help automate the creation of blog posts based on my YouTube videos. Knocking out two birds with one stone!
 
 For this particular framework, I am using the following tools and technologies:
@@ -66,13 +68,6 @@ You're done.
 ## Engineering Notes
 
 - If you forget how to configure your Terraform Cloud account and map it to your repository, just take a look at this page: <https://developer.hashicorp.com/terraform/tutorials/automation/github-actions>
-- You'll need to resubscribe to pubsubhubbub every 5 days, or every time you're about to publish a video due to leasing time constraints:
-  - Go to this document: <https://developers.google.com/youtube/v3/guides/push_notifications>
-  - Fill out the payload with this information:
-    - Callback URL - the URL you copied in step 3, followed by /feed. Ex: <http://1829c24236ed.ngrok.io/feed>
-    - Topic URL - <https://www.youtube.com/xml/feeds/videos.xml?channel_id=CHANNEL_ID> where CHANNEL_ID is the YouTube channel ID for the channel you'd like to subscribe to. in this case, it would be: UCOSYuY_e_r5GtVdlCVwY83Q
-    - Verify type - Asynchronous
-    - Mode - Subscribe Press the 'Do It!' button. Within a few minutes, you should see a GET request to /feed on your ngrok interface and a response code of 200.
 
 ## References
 
