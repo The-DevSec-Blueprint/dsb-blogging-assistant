@@ -13,9 +13,12 @@ NONTECHNICAL_QUESTION = """Hello! Could you create a 2000-2500 word detailed blo
 in markdown with placeholders for pictures and diagrams\n
 in first person that are based on the transcript below:\n"""
 
-TECHNICAL_QUESTION = """Hello! Can you write me a 4000-5000 word technical blog post\n
-in markdown on with placeholders for pictures and diagrams\n
-in first person that are based on the transcript below:"""
+TECHNICAL_QUESTION = """Hello! Can you write me a comprehensive 5000-word technical\n
+blog post with a table of contents and placeholders for pictures and\n
+diagrams in markdown based on the title below:\n
+{VIDEO_NAME}\n\n
+Feel free to use the transcript as a guide:\n
+"""
 
 MD_METADATA = """---
 title: TBD
@@ -37,13 +40,15 @@ class OpenAIClient:  # pylint: disable=too-few-public-methods
     def __init__(self) -> None:
         self.openai_client = self._create_authenticated_client()
 
-    def ask(self, transcript, video_type):
+    def ask(self, transcript, video_name, video_type):
         """
         This function sends a question to the OpenAI API and returns the response.
         """
 
         if video_type == "technical":
-            question = TECHNICAL_QUESTION + transcript + "\n\n"
+            question = (
+                TECHNICAL_QUESTION.format(VIDEO_NAME=video_name) + transcript + "\n\n"
+            )
         else:
             question = NONTECHNICAL_QUESTION + transcript + "\n\n"
 
@@ -54,7 +59,7 @@ class OpenAIClient:  # pylint: disable=too-few-public-methods
                     "content": question,
                 }
             ],
-            model="gpt-4-0125-preview",
+            model="gpt-4-turbo",
         )
 
         answer = MD_METADATA + "\n\n" + chat_completion.choices[0].message.content

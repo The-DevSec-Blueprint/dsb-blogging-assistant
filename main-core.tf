@@ -1,3 +1,7 @@
+locals {
+  sfn_name        = "dsb-blogging-assistant-sfn"
+  default_sfn_arn = "arn:aws:states:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stateMachine:${local.sfn_name}"
+}
 # SNS Topic
 resource "aws_sns_topic" "default" {
   name = "dsb-blogging-assistant-yt-topic"
@@ -46,15 +50,20 @@ resource "aws_ecr_lifecycle_policy" "core_lambda_image_lifecycle_policy" {
 
 
 # Lambda Function
-resource "aws_iam_role" "lambda_exec_role" {
-  name = "dsb-blogging-assistant-lambda-exec-role"
+data "aws_iam_policy_document" "core_lambda_exec_role_inline_policy" {
+  statement {
+    actions   = ["sns:Publish"]
+    resources = [aws_sns_topic.default.arn]
+  }
+}
+resource "aws_iam_role" "core_lambda_exec_role" {
+  name = "dsb-ba-core-lambda-exec-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action = "sts:AssumeRole"
         Effect = "Allow"
-        Sid    = ""
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -64,32 +73,14 @@ resource "aws_iam_role" "lambda_exec_role" {
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole", "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"]
   inline_policy {
-    name = "dsb-blogging-assistant-lambda-policy"
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Action = [
-            "sns:Publish",
-          ]
-          Effect   = "Allow"
-          Resource = "${aws_sns_topic.default.arn}"
-        },
-        {
-          Action = [
-            "states:SendTaskSuccess",
-          ]
-          Effect   = "Allow"
-          Resource = "${aws_sfn_state_machine.default_sfn.arn}"
-        }
-      ]
-    })
+    name   = "InlinePolicy"
+    policy = data.aws_iam_policy_document.core_lambda_exec_role_inline_policy.json
   }
 }
 
 resource "aws_lambda_function" "core_lambda_func" {
   function_name = "dsb-blogging-assistant-lambda"
-  role          = aws_iam_role.lambda_exec_role.arn
+  role          = aws_iam_role.core_lambda_exec_role.arn
 
   image_uri    = data.aws_ecr_image.core_lambda_image_lookup.image_uri
   timeout      = 120 # 2 minutes
@@ -104,12 +95,8 @@ resource "aws_lambda_function" "core_lambda_func" {
   }
   depends_on = [aws_ecr_repository.core_lambda_image]
 }
-resource "aws_lambda_function_url" "core_lambda_func_url" {
-  function_name      = aws_lambda_function.core_lambda_func.function_name
-  authorization_type = "NONE"
-}
 
-resource "aws_lambda_function_event_invoke_config" "core_lambda_invoker" {
+resource "aws_lambda_function_event_invoke_config" "core_inv_event_conf" {
   function_name          = aws_lambda_function.core_lambda_func.function_name
   maximum_retry_attempts = 0
   qualifier              = "$LATEST"
@@ -143,7 +130,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
             "videoName.$": "$.videoName",
             "token.$":"$$.Task.Token",
             "ExecutionContext.$": "$$",
-            "processorLambdaFunctionUrl":"${aws_lambda_function_url.processor_decision_maker_url.function_url}"
+            "processorLambdaFunctionUrl":"${aws_lambda_function_url.dcm_processor_lambda_url.function_url}"
           }
         },
         "TimeoutSeconds": 300,
@@ -154,7 +141,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Type":"Choice",
         "Choices":[
           {
-            "Variable":"$.Status",
+            "Variable":"$.sendConfirmationEmail.Status",
             "StringEquals":"Video is confirmed as technical!",
             "Next":"Generate Technical Blog Post with OpenAI"
           }
@@ -166,6 +153,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Resource": "${aws_lambda_function.core_lambda_func.arn}",
         "Parameters": {
           "actionName": "generateBlogPost",
+          "videoName.$": "$.videoName",
           "videoType": "technical",
           "videoId.$": "$.getVideoId.videoId"
         },
@@ -177,6 +165,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Resource": "${aws_lambda_function.core_lambda_func.arn}",
         "Parameters": {
           "actionName": "generateBlogPost",
+          "videoName.$": "$.videoName",
           "videoType": "non-technical",
           "videoId.$": "$.getVideoId.videoId"
         },
@@ -229,7 +218,6 @@ resource "aws_iam_role" "sfn_iam_role" {
       {
         Action = "sts:AssumeRole"
         Effect = "Allow"
-        Sid    = ""
         Principal = {
           Service = "states.amazonaws.com"
         }

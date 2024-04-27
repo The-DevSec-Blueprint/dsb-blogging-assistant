@@ -35,9 +35,27 @@ resource "aws_ecr_lifecycle_policy" "sub_lambda_image_lifecycle_policy" {
 
 
 # Lambda Function
+resource "aws_iam_role" "sub_lambda_exec_role" {
+  name = "dsb-ba-sub-lambda-exec-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
+}
 resource "aws_lambda_function" "sub_lambda_func" {
   function_name = "dsb-blogging-assistant-sub-lambda"
-  role          = aws_iam_role.lambda_exec_role.arn
+  role          = aws_iam_role.sub_lambda_exec_role.arn
 
   image_uri    = data.aws_ecr_image.sub_lambda_image_lookup.image_uri
   timeout      = 120 # 2 minutes

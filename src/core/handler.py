@@ -32,8 +32,9 @@ def main(event, _):
         )
     if action_name == "generateBlogPost":
         video_id = event["videoId"]
+        video_name = event["videoName"]
         video_type = event["videoType"]
-        response = action_generate_blog_post(video_id, video_type)
+        response = action_generate_blog_post(video_id, video_name, video_type)
     if action_name == "commitBlogToGitHub":
         blog_post_contents = event["blogPostContents"]
         video_name = event["videoName"]
@@ -56,12 +57,12 @@ def action_get_video_id(video_name):
     return {"videoId": video_id, "videoName": video_name}
 
 
-def action_generate_blog_post(video_id, video_type):
+def action_generate_blog_post(video_id, video_name, video_type):
     """
     This function takes in a video ID and returns the blog post contents.
     """
     transcript = YouTubeClient().get_video_transcript(video_id)
-    markdown_blog = OpenAIClient().ask(transcript, video_type)
+    markdown_blog = OpenAIClient().ask(transcript, video_name, video_type)
     return {"blogPostContents": markdown_blog}
 
 
