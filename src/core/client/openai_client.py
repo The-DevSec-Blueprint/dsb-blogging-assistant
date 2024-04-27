@@ -9,9 +9,13 @@ from client.ssm_client import SsmClient
 
 logging.getLogger().setLevel(logging.INFO)
 
-BASE_QUESTION = """Hello! Could you create a 2000-2500 word detailed blog post\n
+NONTECHNICAL_QUESTION = """Hello! Could you create a 2000-2500 word detailed blog post\n
 in markdown with placeholders for pictures and diagrams\n
 in first person that are based on the transcript below:\n"""
+
+TECHNICAL_QUESTION = """Hello! Can you write me a 4000-5000 word technical blog post\n
+in markdown on with placeholders for pictures and diagrams\n
+in first person that are based on the transcript below:"""
 
 MD_METADATA = """---
 title: TBD
@@ -33,12 +37,15 @@ class OpenAIClient:  # pylint: disable=too-few-public-methods
     def __init__(self) -> None:
         self.openai_client = self._create_authenticated_client()
 
-    def ask(self, transcript):
+    def ask(self, transcript, video_type):
         """
         This function sends a question to the OpenAI API and returns the response.
         """
 
-        question = BASE_QUESTION + transcript + "\n\n"
+        if video_type == "technical":
+            question = TECHNICAL_QUESTION + transcript + "\n\n"
+        else:
+            question = NONTECHNICAL_QUESTION + transcript + "\n\n"
 
         chat_completion = self.openai_client.chat.completions.create(
             messages=[

@@ -97,6 +97,16 @@ resource "aws_lambda_function" "core_lambda_func" {
   }
   depends_on = [aws_ecr_repository.core_lambda_image]
 }
+resource "aws_lambda_function_url" "core_lambda_func_url" {
+  function_name      = aws_lambda_function.core_lambda_func.function_name
+  authorization_type = "NONE"
+}
+
+resource "aws_lambda_function_event_invoke_config" "core_lambda_invoker" {
+  function_name          = aws_lambda_function.core_lambda_func.function_name
+  maximum_retry_attempts = 0
+  qualifier              = "$LATEST"
+}
 
 # Step Function
 resource "aws_sfn_state_machine" "default_sfn" {
@@ -114,13 +124,52 @@ resource "aws_sfn_state_machine" "default_sfn" {
           "videoName.$": "$.videoName"
         },
         "ResultPath": "$.getVideoId",
-        "Next": "Generate Blog Post with OpenAI"
+        "Next": "Send Video Confirmation Email"
       },
-      "Generate Blog Post with OpenAI": {
+      "Send Video Confirmation Email": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+        "Parameters": {
+          "FunctionName": "${aws_lambda_function.core_lambda_func.arn}",
+          "Payload": {
+            "actionName": "sendConfirmationEmail",
+            "videoName.$": "$.videoName",
+            "token.$":"$$.Task.Token",
+            "ExecutionContext.$": "$$",
+            "processorLambdaFunctionUrl":"${aws_lambda_function_url.processor_decision_maker_url.function_url}"
+          }
+        },
+        "ResultPath": "$.sendConfirmationEmail",
+        "Next": "Is The Video Technical?"
+      },
+      "Is The Video Technical?":{
+        "Type":"Choice",
+        "Choices":[
+          {
+            "Variable":"$.Status",
+            "StringEquals":"Video is confirmed as technical!",
+            "Next":"Generate Technical Blog Post with OpenAI"
+          }
+        ],
+        "Default":"Generate Non-Technical Blog Post with OpenAI"
+      },
+      "Generate Technical Blog Post with OpenAI": {
         "Type": "Task",
         "Resource": "${aws_lambda_function.core_lambda_func.arn}",
         "Parameters": {
           "actionName": "generateBlogPost",
+          "videoType": "technical",
+          "videoId.$": "$.getVideoId.videoId"
+        },
+        "ResultPath": "$.generateBlogPost",
+        "Next": "Publish MD Blog to GitHub"
+      },
+      "Generate Non-Technical Blog Post with OpenAI": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
+        "Parameters": {
+          "actionName": "generateBlogPost",
+          "videoType": "non-technical",
           "videoId.$": "$.getVideoId.videoId"
         },
         "ResultPath": "$.generateBlogPost",
