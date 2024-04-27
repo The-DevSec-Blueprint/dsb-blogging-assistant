@@ -74,6 +74,13 @@ resource "aws_iam_role" "lambda_exec_role" {
           ]
           Effect   = "Allow"
           Resource = "${aws_sns_topic.default.arn}"
+        },
+        {
+          Action = [
+            "states:SendTaskSuccess",
+          ]
+          Effect   = "Allow"
+          Resource = "${aws_sfn_state_machine.default_sfn.arn}"
         }
       ]
     })
