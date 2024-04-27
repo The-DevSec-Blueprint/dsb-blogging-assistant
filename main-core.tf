@@ -139,6 +139,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
             "processorLambdaFunctionUrl":"${aws_lambda_function_url.processor_decision_maker_url.function_url}"
           }
         },
+        "TimeoutSeconds": 300,
         "ResultPath": "$.sendConfirmationEmail",
         "Next": "Is The Video Technical?"
       },
