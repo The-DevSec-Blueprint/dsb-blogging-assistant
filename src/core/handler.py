@@ -19,7 +19,8 @@ def main(event, _):
 
     if action_name == "getVideoId":
         video_name = event["videoName"]
-        response = action_get_video_id(video_name)
+        video_url = event["videoUrl"]
+        response = action_get_video_id(video_url)
     if action_name == "sendConfirmationEmail":
         video_name = event["videoName"]
         execution_name = event["ExecutionContext"]["Execution"]["Name"]

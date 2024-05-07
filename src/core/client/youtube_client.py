@@ -6,6 +6,7 @@ import os
 import textwrap
 import logging
 
+from urllib.parse import urlparse, parse_qs
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 from client.ssm_client import SsmClient
@@ -23,59 +24,22 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
     def __init__(self):
         self.youtube_client = self._create_authenticated_client()
 
-    def get_video_id(self, video_name=None):
+    def get_video_id(self, video_url):
         """
         Get the ID of the latest video in the channel.
         """
-        # Call the search.list method to retrieve videos for the channel
-        search_response = (
-            self.youtube_client.search()
-            .list(part="snippet", q=CHANNEL_NAME, type="channel")
-            .execute()
-        )
-
-        # Extract the channel ID from the search results
-        channel_id = search_response["items"][0]["id"]["channelId"]
-
-        # Call the search.list method again to retrieve videos for the channel using its ID
-        video = None
-        if video_name is None:
-            video = (
-                self.youtube_client.search()
-                .list(
-                    part="snippet",
-                    channelId=channel_id,
-                    type="video",
-                    order="date",
-                )
-                .execute()["items"][0]
-            )
-        else:  # Search for the last 50 videos (shorts included)
-            video_response = (
-                self.youtube_client.search()
-                .list(
-                    part="snippet",
-                    channelId=channel_id,
-                    type="video",
-                    order="date",
-                    maxResults=50,
-                )
-                .execute()
-            )
-            videos = video_response["items"]
-
-            for _video in videos:
-                logging.info(
-                    "%s: %s", _video["id"]["videoId"], _video["snippet"]["title"]
-                )
-                if _video["snippet"]["title"] == video_name:
-                    video = _video
-                    break
-
-        if video is None:
-            raise Exception(f"Video, {video_name}, not found")
-
-        return video["id"]["videoId"], video["snippet"]["title"]
+        # Parse the URL
+        parsed_url = urlparse(video_url)
+        
+        # Check if it's a YouTube URL
+        if "youtube.com" in parsed_url.netloc or "youtu.be" in parsed_url.netloc:
+            # Extract query parameters from the URL
+            query_params = parse_qs(parsed_url.query)
+            
+            # The video ID is typically under the 'v' parameter for YouTube URLs
+            return query_params.get("v", [None])[0]
+        else:
+            return None
 
     def get_video_transcript(self, latest_video_id, max_line_width=80):
         """

@@ -70,6 +70,15 @@ resource "aws_lambda_function" "sub_lambda_func" {
   depends_on = [aws_ecr_repository.sub_lambda_image, aws_ecs_task_definition.poller_task]
 }
 
+resource "aws_lambda_permission" "allow_eventbridge" {
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.sub_lambda_func.function_name
+  principal     = "events.amazonaws.com"
+  source_arn = aws_cloudwatch_event_rule.sub_lambda_event_rule.arn
+}
+
+
 # Eventbridge Rules
 resource "aws_cloudwatch_event_rule" "sub_lambda_event_rule" {
   name                = "dsb-blogging-assistant-sub-lambda-event-rule"

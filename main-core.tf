@@ -115,7 +115,8 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Resource": "${aws_lambda_function.core_lambda_func.arn}",
         "Parameters": {
           "actionName": "getVideoId",
-          "videoName.$": "$.videoName"
+          "videoName.$": "$.videoName",
+          "videoUrl.$": "$.videoUrl"
         },
         "ResultPath": "$.getVideoId",
         "Next": "Send Video Confirmation Email"
