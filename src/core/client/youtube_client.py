@@ -30,16 +30,16 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
         """
         # Parse the URL
         parsed_url = urlparse(video_url)
-        
+
         # Check if it's a YouTube URL
         if "youtube.com" in parsed_url.netloc or "youtu.be" in parsed_url.netloc:
             # Extract query parameters from the URL
             query_params = parse_qs(parsed_url.query)
-            
+
             # The video ID is typically under the 'v' parameter for YouTube URLs
             return query_params.get("v", [None])[0]
-        else:
-            return None
+
+        return None
 
     def get_video_transcript(self, latest_video_id, max_line_width=80):
         """
