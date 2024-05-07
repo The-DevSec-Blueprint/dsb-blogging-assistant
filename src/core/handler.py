@@ -20,7 +20,7 @@ def main(event, _):
     if action_name == "getVideoId":
         video_name = event["videoName"]
         video_url = event["videoUrl"]
-        response = action_get_video_id(video_url)
+        response = action_get_video_id(video_name, video_url)
     if action_name == "sendConfirmationEmail":
         video_name = event["videoName"]
         execution_name = event["ExecutionContext"]["Execution"]["Name"]
@@ -49,12 +49,12 @@ def main(event, _):
     return response
 
 
-def action_get_video_id(video_name):
+def action_get_video_id(video_name, video_url):
     """
     This function takes in a video name and returns the video ID and video name.
     """
     youtube_client = YouTubeClient()
-    video_id, video_name = youtube_client.get_video_id(video_name)
+    video_id = youtube_client.get_video_id(video_url)
     return {"videoId": video_id, "videoName": video_name}
 
 
