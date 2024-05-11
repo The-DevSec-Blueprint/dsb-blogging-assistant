@@ -10,7 +10,7 @@ from client.ssm_client import SsmClient
 logging.getLogger().setLevel(logging.INFO)
 
 NONTECHNICAL_QUESTION = """Hello! Could you create a 2000-2500 word detailed blog post\n
-in markdown with placeholders for pictures and diagrams\n
+in markdown with a table of contents and placeholders for pictures and diagrams\n
 in first person that are based on the transcript below:\n"""
 
 TECHNICAL_QUESTION = """Hello! Can you write me a comprehensive 5000-word technical\n
