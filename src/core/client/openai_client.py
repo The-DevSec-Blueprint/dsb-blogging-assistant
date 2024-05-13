@@ -17,7 +17,7 @@ TECHNICAL_QUESTION = """Hello! Can you write me a comprehensive 5000-word techni
 blog post with placeholders for pictures and\n
 diagrams in markdown based on the title below:\n
 {VIDEO_NAME}\n\n
-Feel free to use the transcript as a guide:\n
+Please use the transcript as a guide:\n
 """
 
 MD_METADATA = """---
