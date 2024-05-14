@@ -60,7 +60,7 @@ class OpenAIClient:  # pylint: disable=too-few-public-methods
                     "content": question,
                 }
             ],
-            model="gpt-4-turbo",
+            model="gpt-4o",
         )
 
         answer = MD_METADATA + "\n\n" + chat_completion.choices[0].message.content
