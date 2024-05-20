@@ -139,9 +139,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
     },
     "Ignore Short Video": {
       "Type": "Pass",
-      "Resource": "${aws_lambda_function.core_lambda_func.arn}",
-      "ResultPath": "$.handleShortVideo",
-      "End": "True"
+      "End": true
     },
     "Send Video Confirmation Email": {
       "Type": "Task",
