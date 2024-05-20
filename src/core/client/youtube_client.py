@@ -49,6 +49,8 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
             if duration_seconds < 60:
                 return video_id, True
 
+            return video_id, False
+
         raise Exception("Invalid YouTube URL.")
 
     def get_video_transcript(self, latest_video_id, max_line_width=80):

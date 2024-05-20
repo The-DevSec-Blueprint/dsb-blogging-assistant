@@ -20,7 +20,7 @@ Please use the transcript below as a guide.\n
 """
 
 FM_DIRECTIONS = """Please include frontmatter metadata\n
-with the following parameters:\n
+into the markdown post or response with the following parameters:\n
 title, slug, subtitles, tags, cover, domain set as damienjburks.hashnode.dev,\n
 saveAsDraft set to true, and enableToc set to true.\n
 """
