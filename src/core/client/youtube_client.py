@@ -7,6 +7,7 @@ import textwrap
 import logging
 
 from urllib.parse import urlparse, parse_qs
+from isodate import parse_duration
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 from client.ssm_client import SsmClient
@@ -34,12 +35,21 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
         # Check if it's a YouTube URL
         if "youtube.com" in parsed_url.netloc or "youtu.be" in parsed_url.netloc:
             # Extract query parameters from the URL
-            query_params = parse_qs(parsed_url.query)
+            video_id = parse_qs(parsed_url.query).get("v", [None])[0]
 
-            # The video ID is typically under the 'v' parameter for YouTube URLs
-            return query_params.get("v", [None])[0]
+            response = (
+                self.youtube_client.videos()
+                .list(part="contentDetails", id=video_id)
+                .execute()
+            )
 
-        return None
+            # Get the duration of the video and check if it's less than 60 seconds
+            duration = response["items"][0]["contentDetails"]["duration"]
+            duration_seconds = parse_duration(duration).total_seconds()
+            if duration_seconds < 60:
+                return video_id, True
+
+        raise Exception("Invalid YouTube URL.")
 
     def get_video_transcript(self, latest_video_id, max_line_width=80):
         """

@@ -20,6 +20,7 @@ def main(event, _):
     if action_name == "getVideoId":
         video_name = event["videoName"]
         video_url = event["videoUrl"]
+
         response = action_get_video_id(video_name, video_url)
     if action_name == "sendConfirmationEmail":
         video_name = event["videoName"]
@@ -35,15 +36,18 @@ def main(event, _):
         video_id = event["videoId"]
         video_name = event["videoName"]
         video_type = event["videoType"]
+
         response = action_generate_blog_post(video_id, video_name, video_type)
     if action_name == "commitBlogToGitHub":
         blog_post_contents = event["blogPostContents"]
         video_name = event["videoName"]
+
         response = action_commit_blog_to_github(video_name, blog_post_contents)
     if action_name == "sendEmail":
         commit_id = event["commitId"]
         branch_name = event["branchName"]
         video_name = event["videoName"]
+
         response = action_send_email(commit_id, branch_name, video_name)
 
     return response
@@ -54,8 +58,8 @@ def action_get_video_id(video_name, video_url):
     This function takes in a video name and returns the video ID and video name.
     """
     youtube_client = YouTubeClient()
-    video_id = youtube_client.get_video_id(video_url)
-    return {"videoId": video_id, "videoName": video_name}
+    video_id, is_short = youtube_client.get_video_id(video_url)
+    return {"videoId": video_id, "videoName": video_name, "isShort": is_short}
 
 
 def action_generate_blog_post(video_id, video_name, video_type):

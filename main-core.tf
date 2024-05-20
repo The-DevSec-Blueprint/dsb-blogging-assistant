@@ -108,96 +108,118 @@ resource "aws_sfn_state_machine" "default_sfn" {
   role_arn   = aws_iam_role.sfn_iam_role.arn
   definition = <<EOF
   {
-    "StartAt": "Get Video Information",
-    "States": {
-      "Get Video Information": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
-        "Parameters": {
-          "actionName": "getVideoId",
+  "StartAt": "Get Video Information",
+  "States": {
+    "Get Video Information": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.core_lambda_func.arn}",
+      "Parameters": {
+        "actionName": "getVideoId",
+        "videoName.$": "$.videoName",
+        "videoUrl.$": "$.videoUrl"
+      },
+      "ResultPath": "$.getVideoId",
+      "Next": "Is Video Short?"
+    },
+    "Is Video Short?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.getVideoId.isShort",
+          "BooleanEquals": true,
+          "Next": "Ignore Short Video"
+        },
+        {
+          "Variable": "$.getVideoId.isShort",
+          "BooleanEquals": false,
+          "Next": "Send Video Confirmation Email"
+        }
+      ],
+      "Default": "Send Video Confirmation Email"
+    },
+    "Ignore Short Video": {
+      "Type": "Pass",
+      "Resource": "${aws_lambda_function.core_lambda_func.arn}",
+      "ResultPath": "$.handleShortVideo",
+      "End": "True"
+    },
+    "Send Video Confirmation Email": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+      "Parameters": {
+        "FunctionName": "${aws_lambda_function.core_lambda_func.arn}",
+        "Payload": {
+          "actionName": "sendConfirmationEmail",
           "videoName.$": "$.videoName",
-          "videoUrl.$": "$.videoUrl"
-        },
-        "ResultPath": "$.getVideoId",
-        "Next": "Send Video Confirmation Email"
+          "token.$":"$$.Task.Token",
+          "ExecutionContext.$": "$$",
+          "processorLambdaFunctionUrl":"${aws_lambda_function_url.dcm_processor_lambda_url.function_url}"
+        }
       },
-      "Send Video Confirmation Email": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
-        "Parameters": {
-          "FunctionName": "${aws_lambda_function.core_lambda_func.arn}",
-          "Payload": {
-            "actionName": "sendConfirmationEmail",
-            "videoName.$": "$.videoName",
-            "token.$":"$$.Task.Token",
-            "ExecutionContext.$": "$$",
-            "processorLambdaFunctionUrl":"${aws_lambda_function_url.dcm_processor_lambda_url.function_url}"
-          }
-        },
-        "TimeoutSeconds": 300,
-        "ResultPath": "$.sendConfirmationEmail",
-        "Next": "Is The Video Technical?"
+      "TimeoutSeconds": 300,
+      "ResultPath": "$.sendConfirmationEmail",
+      "Next": "Is The Video Technical?"
+    },
+    "Is The Video Technical?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.sendConfirmationEmail.Status",
+          "StringEquals": "Video is confirmed as technical!",
+          "Next": "Generate Technical Blog Post with OpenAI"
+        }
+      ],
+      "Default": "Generate Non-Technical Blog Post with OpenAI"
+    },
+    "Generate Technical Blog Post with OpenAI": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.core_lambda_func.arn}",
+      "Parameters": {
+        "actionName": "generateBlogPost",
+        "videoName.$": "$.videoName",
+        "videoType": "technical",
+        "videoId.$": "$.getVideoId.videoId"
       },
-      "Is The Video Technical?":{
-        "Type":"Choice",
-        "Choices":[
-          {
-            "Variable":"$.sendConfirmationEmail.Status",
-            "StringEquals":"Video is confirmed as technical!",
-            "Next":"Generate Technical Blog Post with OpenAI"
-          }
-        ],
-        "Default":"Generate Non-Technical Blog Post with OpenAI"
+      "ResultPath": "$.generateBlogPost",
+      "Next": "Publish MD Blog to GitHub"
+    },
+    "Generate Non-Technical Blog Post with OpenAI": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.core_lambda_func.arn}",
+      "Parameters": {
+        "actionName": "generateBlogPost",
+        "videoName.$": "$.videoName",
+        "videoType": "non-technical",
+        "videoId.$": "$.getVideoId.videoId"
       },
-      "Generate Technical Blog Post with OpenAI": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
-        "Parameters": {
-          "actionName": "generateBlogPost",
-          "videoName.$": "$.videoName",
-          "videoType": "technical",
-          "videoId.$": "$.getVideoId.videoId"
-        },
-        "ResultPath": "$.generateBlogPost",
-        "Next": "Publish MD Blog to GitHub"
+      "ResultPath": "$.generateBlogPost",
+      "Next": "Publish MD Blog to GitHub"
+    },
+    "Publish MD Blog to GitHub": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.core_lambda_func.arn}",
+      "Parameters": {
+        "actionName": "commitBlogToGitHub",
+        "videoName.$": "$.videoName",
+        "blogPostContents.$": "$.generateBlogPost.blogPostContents"
       },
-      "Generate Non-Technical Blog Post with OpenAI": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
-        "Parameters": {
-          "actionName": "generateBlogPost",
-          "videoName.$": "$.videoName",
-          "videoType": "non-technical",
-          "videoId.$": "$.getVideoId.videoId"
-        },
-        "ResultPath": "$.generateBlogPost",
-        "Next": "Publish MD Blog to GitHub"
+      "ResultPath": "$.commitBlogToGitHub",
+      "Next": "Send Email To DSB"
+    },
+    "Send Email To DSB": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.core_lambda_func.arn}",
+      "Parameters": {
+        "actionName": "sendEmail",
+        "commitId.$": "$.commitBlogToGitHub.commitId",
+        "branchName.$": "$.commitBlogToGitHub.branchName",
+        "videoName.$": "$.videoName"
       },
-      "Publish MD Blog to GitHub": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
-        "Parameters": {
-          "actionName": "commitBlogToGitHub",
-          "videoName.$": "$.videoName",
-          "blogPostContents.$": "$.generateBlogPost.blogPostContents"
-        },
-        "ResultPath": "$.commitBlogToGitHub",
-        "Next": "Send Email To DSB"
-      },
-      "Send Email To DSB": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.core_lambda_func.arn}",
-        "Parameters": {
-          "actionName": "sendEmail",
-          "commitId.$": "$.commitBlogToGitHub.commitId",
-          "branchName.$": "$.commitBlogToGitHub.branchName",
-          "videoName.$": "$.videoName"
-        },
-        "ResultPath": "$.sendEmail",
-        "End": true
-      }
+      "ResultPath": "$.sendEmail",
+      "End": true
     }
   }
+}
   EOF
   logging_configuration {
     log_destination        = "${aws_cloudwatch_log_group.default_sfn_lg.arn}:*"
