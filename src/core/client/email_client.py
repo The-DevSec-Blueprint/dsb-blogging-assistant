@@ -26,7 +26,7 @@ class EmailClient:  # pylint: disable=too-few-public-methods, line-too-long
         This function sends an email to the user when a blog post is published.
         """
         # Create Email Message
-        subject = f"Blog Post Published for Video: {video_name}"
+        subject = "New Blog Post Published for Video!"
         repository_url = REPOSITORY_URL + "/tree/" + branch_name
         html_message = (
             f"Your draft blog post for the following video, {video_name}, has been published to the dsb-digest!\n"
