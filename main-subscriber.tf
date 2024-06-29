@@ -53,6 +53,29 @@ resource "aws_iam_role" "sub_lambda_exec_role" {
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
 }
+
+resource "aws_iam_role_policy" "read_only_policy" {
+  name = "read_only_policy"
+  role = aws_iam_role.sub_lambda_exec_role.id
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ecs:ListTasks",
+          "ecs:DescribeTasks",
+          "ec2:DescribeNetworkInterfaces"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
+
 resource "aws_lambda_function" "sub_lambda_func" {
   function_name = "dsb-blogging-assistant-sub-lambda"
   role          = aws_iam_role.sub_lambda_exec_role.arn
@@ -63,8 +86,9 @@ resource "aws_lambda_function" "sub_lambda_func" {
 
   environment {
     variables = {
-      CALLBACK_URL = "http://${aws_alb.application_load_balancer.dns_name}/feed"
-      TOPIC_URL    = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=UCOSYuY_e_r5GtVdlCVwY83Q"
+      CLUSTER_NAME      = "${aws_ecs_cluster.default_ecs_cluster.name}"
+      CALLBACK_TASK_ARN = "${aws_ecs_task_definition.poller_task.arn}"
+      TOPIC_URL         = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=UCOSYuY_e_r5GtVdlCVwY83Q"
     }
   }
   depends_on = [aws_ecr_repository.sub_lambda_image, aws_ecs_task_definition.poller_task]

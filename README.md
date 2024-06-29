@@ -1,10 +1,17 @@
 # DSB Blogging Assistant
 
+![Build Status](https://github.com/The-DevSec-Blueprint/dsb-blogging-assistant/actions/workflows/default_workflow.yml/badge.svg?logo=github)
+![License](https://img.shields.io/github/license/The-DevSec-Blueprint/dsb-blogging-assistant?logo=license)
+![Terraform Registry](https://img.shields.io/badge/Terraform-Registry-purple?logo=terraform)
+![Python Requirements](https://img.shields.io/badge/python-3.8-blue?logo=python)
+![GitHub Issues](https://img.shields.io/github/issues/The-DevSec-Blueprint/dsb-blogging-assistant?logo=github)
+![GitHub Forks](https://img.shields.io/github/forks/The-DevSec-Blueprint/dsb-blogging-assistant?logo=github)
+![GitHub Stars](https://img.shields.io/github/stars/The-DevSec-Blueprint/dsb-blogging-assistant?logo=github)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/The-DevSec-Blueprint/dsb-blogging-assistant?logo=github)
+
 <p align="center"><img src="./docs/images/logo.svg" /></p>
 
 ## Overview
-
->**NOTE**: Update documentation to add in the subscriber event job that runs every 24 hours.
 
 This is the super duper awesome framework that I've built to help automate the creation of blog posts based on my YouTube videos. Knocking out two birds with one stone!
 
@@ -19,6 +26,7 @@ For this particular framework, I am using the following tools and technologies:
 
 ### Base Level Architecture Diagram
 
+>**NOTE**: This architecture diagram is out of date. The ALB does not exist, or has been decommissioned.
 ![Base Architecture Diagram](./docs/images/architecture.drawio.svg)
 
 #### Detailed Explanation _(Somewhat)_
@@ -73,3 +81,7 @@ You're done.
 
 - <https://developers.google.com/youtube/v3/guides/push_notifications>
 - <https://github.com/BryanCuneo/yt-to-discord/tree/main?tab=readme-ov-file>
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
