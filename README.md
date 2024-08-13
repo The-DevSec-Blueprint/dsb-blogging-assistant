@@ -3,7 +3,7 @@
 ![Build Status](https://github.com/The-DevSec-Blueprint/dsb-blogging-assistant/actions/workflows/default_workflow.yml/badge.svg?logo=github)
 ![License](https://img.shields.io/github/license/The-DevSec-Blueprint/dsb-blogging-assistant?logo=license)
 ![Terraform Registry](https://img.shields.io/badge/Terraform-Registry-purple?logo=terraform)
-![Python Requirements](https://img.shields.io/badge/python-3.8-blue?logo=python)
+![Python Requirements](https://img.shields.io/badge/python-3.12-blue?logo=python)
 ![GitHub Issues](https://img.shields.io/github/issues/The-DevSec-Blueprint/dsb-blogging-assistant?logo=github)
 ![GitHub Forks](https://img.shields.io/github/forks/The-DevSec-Blueprint/dsb-blogging-assistant?logo=github)
 ![GitHub Stars](https://img.shields.io/github/stars/The-DevSec-Blueprint/dsb-blogging-assistant?logo=github)
