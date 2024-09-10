@@ -39,6 +39,7 @@ The base architecture diagram provides a high-level overview of how components a
 - Lambda Function
 - ECS Cluster with Task Definitions
 - Application Load Balancer
+- Web Application Firewall
 - SSM Parameters for managing API keys and secrets
 - IAM Roles and Policies
 
