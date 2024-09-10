@@ -1,5 +1,5 @@
 locals {
-  defaults = ["${aws_security_group.default.id}"]
+  service_security_groups = ["${aws_security_group.service_security_group.id}"]
 }
 
 resource "aws_default_vpc" "default_vpc" {
@@ -13,12 +13,65 @@ resource "aws_default_subnet" "default_subnet_b" {
   availability_zone = "ca-central-1b"
 }
 
-resource "aws_security_group" "default" {
+resource "aws_security_group" "load_balancer_security_group" {
   ingress {
     from_port   = 80
     to_port     = 80
-    protocol    = "TCP"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Allow traffic in from all sources
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_alb" "application_load_balancer" {
+  name               = "dsb-blogging-assistant-ecs-lb"
+  load_balancer_type = "application"
+  subnets = [
+    aws_default_subnet.default_subnet_a.id,
+    aws_default_subnet.default_subnet_b.id
+  ]
+
+  security_groups = [
+    aws_security_group.load_balancer_security_group.id
+  ]
+}
+
+resource "aws_lb_target_group" "target_group" {
+  name        = "dsb-ba-target-group"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_default_vpc.default_vpc.id # default VPC
+
+  health_check {
+    path     = "/test"
+    interval = 300 # 5 minute interval
+  }
+}
+
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = aws_alb.application_load_balancer.arn #  load balancer
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn # target group
+  }
+}
+
+resource "aws_security_group" "service_security_group" {
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.load_balancer_security_group.id]
   }
 
   egress {
@@ -140,9 +193,15 @@ resource "aws_ecs_service" "poller_service" {
 
   force_new_deployment = true
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.target_group.arn # Reference the target group
+    container_name   = "dsb-ba-poller-container"            # Must always align with the name of the container
+    container_port   = 80                                   # Specify the container port
+  }
+
   network_configuration {
-    subnets          = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id]
-    security_groups  = [aws_security_group.default.id]
+    subnets          = [aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_a.id]
+    security_groups  = [aws_security_group.service_security_group.id]
     assign_public_ip = true
   }
 
@@ -151,4 +210,8 @@ resource "aws_ecs_service" "poller_service" {
 
 resource "aws_ecs_cluster" "default_ecs_cluster" {
   name = "dsb-blogging-assistant-cluster"
+}
+
+output "app_url" {
+  value = aws_alb.application_load_balancer.dns_name
 }
