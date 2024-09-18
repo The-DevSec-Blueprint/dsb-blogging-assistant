@@ -62,6 +62,9 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
         password = self.ssm_client.get_parameter("/credentials/smartproxy/password")
         proxy = f"http://{username}:{password}@gate.smartproxy.com:10001"
 
+        logging.info("Getting transcript for video %s", latest_video_id)
+        logging.info("Using proxy %s", proxy)
+
         transcript = YouTubeTranscriptApi.get_transcript(
             video_id=latest_video_id,
             languages=["en"],
