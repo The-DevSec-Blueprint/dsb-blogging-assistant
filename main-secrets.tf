@@ -23,3 +23,15 @@ resource "aws_ssm_parameter" "youtube_authtoken" {
   type  = "SecureString"
   value = var.YOUTUBE_AUTH_TOKEN
 }
+
+resource "aws_ssm_parameter" "smartproxy_username" {
+  name  = "/credentials/smartproxy/username"
+  type  = "SecureString"
+  value = var.PROXY_USERNAME
+}
+
+resource "aws_ssm_parameter" "smartproxy_password" {
+  name  = "/credentials/smartproxy/password"
+  type  = "SecureString"
+  value = var.PROXY_PASSWORD
+}

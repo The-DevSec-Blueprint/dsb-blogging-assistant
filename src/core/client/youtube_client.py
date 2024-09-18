@@ -24,6 +24,7 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
 
     def __init__(self):
         self.youtube_client = self._create_authenticated_client()
+        self.ssm_client = SsmClient()
 
     def get_video_id(self, video_url):
         """
@@ -57,8 +58,14 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
         """
         Get the transcript of the latest video in the channel.
         """
+        username = self.ssm_client.get_parameter("/credentials/smartproxy/username")
+        password = self.ssm_client.get_parameter("/credentials/smartproxy/password")
+        proxy = f"http://{username}:{password}@gate.smartproxy.com:10001"
+
         transcript = YouTubeTranscriptApi.get_transcript(
-            video_id=latest_video_id, languages=["en"]
+            video_id=latest_video_id,
+            languages=["en"],
+            proxies={"http": proxy, "https": proxy},
         )
 
         formatted_transcript = ""
@@ -73,7 +80,5 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
         """
         Create an authenticated YouTube API client.
         """
-
-        ssm_client = SsmClient()
-        api_key = ssm_client.get_parameter("/credentials/youtube/auth_token")
+        api_key = self.ssm_client.get_parameter("/credentials/youtube/auth_token")
         return build("youtube", "v3", developerKey=api_key)
