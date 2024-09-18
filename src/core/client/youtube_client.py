@@ -23,8 +23,8 @@ class YouTubeClient:  # pylint: disable=no-member, broad-exception-raised
     """
 
     def __init__(self):
-        self.youtube_client = self._create_authenticated_client()
         self.ssm_client = SsmClient()
+        self.youtube_client = self._create_authenticated_client()
 
     def get_video_id(self, video_url):
         """
