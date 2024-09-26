@@ -67,7 +67,7 @@ def action_generate_blog_post(video_id, video_name, video_type):
     This function takes in a video ID and returns the blog post contents.
     """
     transcript = YouTubeClient().get_video_transcript(video_id)
-    #markdown_blog = OpenAIClient().ask(transcript, video_name, video_type)
+    # markdown_blog = OpenAIClient().ask(transcript, video_name, video_type)
     markdown_blog = ClaudeClient().ask(transcript, video_name, video_type)
     return {"blogPostContents": markdown_blog}
 

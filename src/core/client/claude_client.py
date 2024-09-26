@@ -31,7 +31,7 @@ class ClaudeClient:  # pylint: disable=too-few-public-methods
     """
 
     def __init__(self) -> None:
-        self.bedrock_client = boto3.client('bedrock-runner', region_name="us-east-1")
+        self.bedrock_client = boto3.client("bedrock-runner", region_name="us-east-1")
 
     def ask(self, transcript, video_name, video_type):
         """
