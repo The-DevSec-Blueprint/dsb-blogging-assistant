@@ -90,7 +90,7 @@ resource "aws_lambda_function" "core_lambda_func" {
   role          = aws_iam_role.core_lambda_exec_role.arn
 
   image_uri    = data.aws_ecr_image.core_lambda_image_lookup.image_uri
-  timeout      = 120 # 2 minutes
+  timeout      = 900 # 15 minutes
   package_type = "Image"
 
   environment {
