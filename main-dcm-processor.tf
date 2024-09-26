@@ -42,6 +42,12 @@ data "aws_iam_policy_document" "dcm_lambda_exec_role_inline_policy" {
     actions   = ["states:SendTaskSuccess"]
     resources = [local.default_sfn_arn]
   }
+  statement {
+    actions = ["bedrock:InvokeModel"]
+    resources = [
+      "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
+    ]
+  }
 }
 resource "aws_iam_role" "dcm_lambda_exec_role" {
   name = "dsb-ba-dcm-processor-lambda-exec-role"
