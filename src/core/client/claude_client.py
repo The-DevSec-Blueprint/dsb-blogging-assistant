@@ -31,7 +31,7 @@ class ClaudeClient:  # pylint: disable=too-few-public-methods
     """
 
     def __init__(self) -> None:
-        self.bedrock_client = boto3.client("bedrock-runner", region_name="us-east-1")
+        self.bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
 
     def ask(self, transcript, video_name, video_type):
         """
@@ -53,7 +53,7 @@ class ClaudeClient:  # pylint: disable=too-few-public-methods
         # Format the request payload using the model's native structure.
         native_request = {
             "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 1024,
+            "max_tokens": 10000,  # Hopefully this'll be enough.
             "temperature": 0.5,
             "messages": [
                 {

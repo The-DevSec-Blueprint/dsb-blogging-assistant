@@ -55,6 +55,13 @@ data "aws_iam_policy_document" "core_lambda_exec_role_inline_policy" {
     actions   = ["sns:Publish"]
     resources = [aws_sns_topic.default.arn]
   }
+
+  statement {
+    actions = ["bedrock:InvokeModel"]
+    resources = [
+      "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
+    ]
+  }
 }
 resource "aws_iam_role" "core_lambda_exec_role" {
   name = "dsb-ba-core-lambda-exec-role"
