@@ -176,7 +176,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
       ],
       "Default": "Generate Non-Technical Blog Post with OpenAI"
     },
-    "Generate Technical Blog Post with OpenAI": {
+    "Generate Technical Blog Post with Claude": {
       "Type": "Task",
       "Resource": "${aws_lambda_function.core_lambda_func.arn}",
       "Parameters": {
@@ -188,7 +188,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
       "ResultPath": "$.generateBlogPost",
       "Next": "Publish MD Blog to GitHub"
     },
-    "Generate Non-Technical Blog Post with OpenAI": {
+    "Generate Non-Technical Blog Post with Claude": {
       "Type": "Task",
       "Resource": "${aws_lambda_function.core_lambda_func.arn}",
       "Parameters": {
