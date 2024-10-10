@@ -56,7 +56,7 @@ Upon code updates, a GitHub action triggers a workflow to deploy the latest chan
 3. The poller extracts key information such as video title and URL, triggering a Step Function by passing the payload.
 4. The Step Function initiates the Lambda function, executing a series of steps:
    - **Step 1:** The video transcript is downloaded.
-   - **Step 2:** The transcript is sent to ChatGPT with a request to generate a blog post in markdown format.
+   - **Step 2:** The transcript is sent to Claude (Sonnet 3.5) with a request to generate a blog post in markdown format.
    - **Step 3:** The `dsb-digest` repository is cloned, and the new blog post is committed to a new branch based on a hashed value of the video title.
    - **Final Step:** The process concludes, and the final payload is sent to the SNS topic.
 5. An email is sent to Damien with details about the new blog post in the `dsb-digest` repository.
