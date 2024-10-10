@@ -171,10 +171,10 @@ resource "aws_sfn_state_machine" "default_sfn" {
         {
           "Variable": "$.sendConfirmationEmail.Status",
           "StringEquals": "Video is confirmed as technical!",
-          "Next": "Generate Technical Blog Post with OpenAI"
+          "Next": "Generate Technical Blog Post with Claude"
         }
       ],
-      "Default": "Generate Non-Technical Blog Post with OpenAI"
+      "Default": "Generate Non-Technical Blog Post with Claude"
     },
     "Generate Technical Blog Post with Claude": {
       "Type": "Task",
