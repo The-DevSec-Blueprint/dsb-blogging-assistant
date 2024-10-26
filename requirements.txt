@@ -70,6 +70,6 @@ tqdm==4.66.2
 typing_extensions==4.10.0
 uritemplate==4.1.1
 urllib3==2.2.2
-Werkzeug==3.0.2
+Werkzeug==3.0.6
 xmltodict==0.13.0
 youtube-transcript-api==0.6.2
