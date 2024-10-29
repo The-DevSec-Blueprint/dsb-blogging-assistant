@@ -189,8 +189,8 @@ resource "aws_sfn_state_machine" "default_sfn" {
       "Retry": [
         {
           "ErrorEquals": ["States.ALL"],
-          "IntervalSeconds": 2,
-          "BackoffRate": 2.0,
+          "IntervalSeconds": 60,
+          "BackoffRate": 1.0,
           "MaxAttempts": 5
         }
       ],
@@ -205,6 +205,14 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "videoType": "non-technical",
         "videoId.$": "$.getVideoId.videoId"
       },
+      "Retry": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "IntervalSeconds": 60,
+          "BackoffRate": 1.0,
+          "MaxAttempts": 5
+        }
+      ],
       "ResultPath": "$.generateBlogPost",
       "Next": "Publish MD Blog to GitHub"
     },
