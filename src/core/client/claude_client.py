@@ -48,7 +48,7 @@ class ClaudeClient:  # pylint: disable=too-few-public-methods
             prompt = NONTECHNICAL_QUESTION + FM_DIRECTIONS + transcript
 
         # Set the model ID, e.g., Claude 3 Haiku.
-        model_id = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+        model_id = "anthropic.claude-3-sonnet-20240229-v1:0:28k"
 
         # Format the request payload using the model's native structure.
         native_request = {
