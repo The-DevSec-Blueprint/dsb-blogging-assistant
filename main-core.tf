@@ -186,6 +186,14 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "videoId.$": "$.getVideoId.videoId"
       },
       "ResultPath": "$.generateBlogPost",
+      "Retry": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "IntervalSeconds": 2,
+          "BackoffRate": 2.0,
+          "MaxAttempts": 5
+        }
+      ],
       "Next": "Publish MD Blog to GitHub"
     },
     "Generate Non-Technical Blog Post with Claude": {
