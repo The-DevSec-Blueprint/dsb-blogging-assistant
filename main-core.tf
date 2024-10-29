@@ -148,6 +148,16 @@ resource "aws_sfn_state_machine" "default_sfn" {
       "Type": "Pass",
       "End": true
     },
+    "Get Video Transcript": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.core_lambda_func.arn}",
+      "Parameters": {
+        "actionName": "getVideoTranscript",
+        "videoId.$": "$.getVideoId.videoId",
+      },
+      "ResultPath": "$.getVideoTranscript",
+      "Next": "Send Video Confirmation Email"
+    },
     "Send Video Confirmation Email": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
@@ -183,7 +193,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "actionName": "generateBlogPost",
         "videoName.$": "$.videoName",
         "videoType": "technical",
-        "videoId.$": "$.getVideoId.videoId"
+        "transcript.$": "$.getVideoTranscript.transcript"
       },
       "ResultPath": "$.generateBlogPost",
       "Retry": [
@@ -203,7 +213,7 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "actionName": "generateBlogPost",
         "videoName.$": "$.videoName",
         "videoType": "non-technical",
-        "videoId.$": "$.getVideoId.videoId"
+        "transcript.$": "$.getVideoTranscript.transcript"
       },
       "Retry": [
         {
