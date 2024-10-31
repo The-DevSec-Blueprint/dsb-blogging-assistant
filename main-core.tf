@@ -156,9 +156,9 @@ resource "aws_sfn_state_machine" "default_sfn" {
         "Payload": {
           "actionName": "sendConfirmationEmail",
           "videoName.$": "$.videoName",
-          "token.$":"$$.Task.Token",
+          "token.$": "$$.Task.Token",
           "ExecutionContext.$": "$$",
-          "processorLambdaFunctionUrl":"${aws_lambda_function_url.dcm_processor_lambda_url.function_url}"
+          "processorLambdaFunctionUrl": "${aws_lambda_function_url.dcm_processor_lambda_url.function_url}"
         }
       },
       "TimeoutSeconds": 300,
@@ -188,7 +188,9 @@ resource "aws_sfn_state_machine" "default_sfn" {
       "ResultPath": "$.generateBlogPost",
       "Retry": [
         {
-          "ErrorEquals": ["States.ALL"],
+          "ErrorEquals": [
+            "States.ALL"
+          ],
           "IntervalSeconds": 60,
           "BackoffRate": 1.0,
           "MaxAttempts": 5
@@ -207,7 +209,9 @@ resource "aws_sfn_state_machine" "default_sfn" {
       },
       "Retry": [
         {
-          "ErrorEquals": ["States.ALL"],
+          "ErrorEquals": [
+            "States.ALL"
+          ],
           "IntervalSeconds": 60,
           "BackoffRate": 1.0,
           "MaxAttempts": 5
