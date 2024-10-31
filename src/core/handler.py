@@ -64,8 +64,13 @@ def action_get_video_information(video_name, video_url):
     youtube_client = YouTubeClient()
     video_id, is_short = youtube_client.get_video_id(video_url)
     transcript = youtube_client.get_video_transcript(video_id)
-    
-    return {"videoId": video_id, "videoName": video_name, "isShort": is_short, "transcript": transcript}
+
+    return {
+        "videoId": video_id,
+        "videoName": video_name,
+        "isShort": is_short,
+        "transcript": transcript,
+    }
 
 
 def action_generate_blog_post(transcript, video_name, video_type):
