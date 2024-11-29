@@ -53,7 +53,7 @@ Key components include:
 
 ### Required Variables in Terraform Cloud
 
-The following variables from `terraform/core/variables.tf` need to be saved in Terraform Cloud as **environment variables**:
+The following variables from `terraform/core/variables.tf` need to be saved in Terraform Cloud as **Terraform variables**:
 
 | Variable Name          | Description                                   |
 | ---------------------- | --------------------------------------------- |
