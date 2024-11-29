@@ -1,0 +1,60 @@
+name: "Default Workflow (main)"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  format-check:
+    uses: ./.github/workflows/black-fmt-check.yml
+  linting-check:
+    uses: ./.github/workflows/pylint-check.yml
+  terraform-lint-check:
+    uses: ./.github/workflows/terraform-lint.yml
+  create-ecr-infrastructure-terraform:
+    needs:
+      - format-check
+      - linting-check
+      - terraform-lint-check
+    uses: ./.github/workflows/terraform-apply.yml
+    permissions:
+      contents: read
+    secrets: inherit
+    with:
+      tf_workspace: "dsb-blogging-assistant-ecr"
+      config_directory: "./terraform/repositories"
+  publish-core-lambda-image:
+    needs:
+      - create-ecr-infrastructure-terraform
+    uses: ./.github/workflows/docker-publish-core.yml
+    secrets: inherit
+  publish-subscriber-lambda-image:
+    needs:
+      - create-ecr-infrastructure-terraform
+    uses: ./.github/workflows/docker-publish-subscriber.yml
+    secrets: inherit
+  publish-vdl-lambda-image:
+    needs:
+      - create-ecr-infrastructure-terraform
+    uses: ./.github/workflows/docker-publish-vdl.yml
+    secrets: inherit
+  publish-des-lambda-image:
+    needs:
+      - create-ecr-infrastructure-terraform
+    uses: ./.github/workflows/docker-publish-des.yml
+    secrets: inherit
+  create-core-infrastructure-terraform:
+    needs:
+      - publish-core-lambda-image
+      - publish-subscriber-lambda-image
+      - publish-vdl-lambda-image
+      - publish-des-lambda-image
+    uses: ./.github/workflows/terraform-apply.yml
+    permissions:
+      contents: read
+    secrets: inherit
+    with:
+      tf_workspace: "dsb-blogging-assistant"
+      config_directory: "./terraform/core"

@@ -2,12 +2,19 @@ name: "Terraform Apply"
 
 on:
   workflow_call:
+    inputs:
+      tf_workspace:
+        description: "The Terraform Cloud Workspace to use"
+        required: true
+        type: string
+      config_directory:
+        description: "The directory containing Terraform configuration"
+        required: true
+        type: string
 
 env:
-  TF_CLOUD_ORGANIZATION: "DSB"
+  TF_CLOUD_ORGANIZATION: "${{ secrets.TF_CLOUD_ORGANIZATION }}"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "dsb-blogging-assistant"
-  CONFIG_DIRECTORY: "./"
 
 jobs:
   terraform:
@@ -23,14 +30,14 @@ jobs:
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.3.1
         id: apply-upload
         with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
+          workspace: ${{ inputs.tf_workspace }}
+          directory: ${{ inputs.config_directory }}
 
       - name: Create Apply Run
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.1
         id: apply-run
         with:
-          workspace: ${{ env.TF_WORKSPACE }}
+          workspace: ${{ inputs.tf_workspace }}
           configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
 
       - name: Apply

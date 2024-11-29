@@ -1,0 +1,42 @@
+name: Publish Video Drop Listener (VDL) Lambda Image - ECR
+
+on:
+  workflow_call:
+
+jobs:
+  build_and_publish_vdl_image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if there are changes in lambdas/video-drop-listener
+        id: check_changes
+        run: |
+          if git diff --quiet HEAD^ HEAD -- 'lambdas/video-drop-listener/**'; then
+            echo "No changes detected in lambdas/video-drop-listener"
+            exit 1
+          fi
+          echo "Changes detected in lambdas/video-drop-listener"
+
+      - name: Configure AWS credentials
+        if: success() # Proceed only if changes are detected
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        if: success() # Proceed only if changes are detected
+        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+      - name: Build Docker image
+        if: success() # Proceed only if changes are detected
+        working-directory: ./lambdas/vdl
+        run: docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dsb-blogging-assistant-vdl-image:latest -f Dockerfile .
+
+      - name: Push Docker image to ECR
+        if: success() # Proceed only if changes are detected
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dsb-blogging-assistant-vdl-image:latest

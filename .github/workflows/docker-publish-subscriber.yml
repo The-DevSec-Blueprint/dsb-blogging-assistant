@@ -1,0 +1,42 @@
+name: Publish Subscriber Lambda Image - ECR
+
+on:
+  workflow_call:
+
+jobs:
+  build_and_publish_sub_lambda_image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if there are changes in lambdas/subscribers
+        id: check_changes
+        run: |
+          if git diff --quiet HEAD^ HEAD -- 'lambdas/subscribers/**'; then
+            echo "No changes detected in lambdas/subscribers"
+            exit 1
+          fi
+          echo "Changes detected in lambdas/subscribers"
+
+      - name: Configure AWS credentials
+        if: success()  # Only proceed if changes are detected
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        if: success()  # Only proceed if changes are detected
+        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+      - name: Build Docker image
+        if: success()  # Only proceed if changes are detected
+        working-directory: ./lambdas/subscriber
+        run: docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dsb-blogging-assistant-sub-lambda-image:latest -f Dockerfile .
+
+      - name: Push Docker image to ECR
+        if: success()  # Only proceed if changes are detected
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dsb-blogging-assistant-sub-lambda-image:latest

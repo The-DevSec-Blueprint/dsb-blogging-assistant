@@ -1,0 +1,21 @@
+name: Terraform Linting and Formatting
+
+on:
+  workflow_call:
+
+jobs:
+  lint-and-format:
+    name: Lint and Format Terraform Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      - name: Format Terraform files
+        run: terraform fmt -check -recursive

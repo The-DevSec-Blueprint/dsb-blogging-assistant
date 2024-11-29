@@ -1,0 +1,5 @@
+boto3
+GitPython
+youtube-transcript-api
+isodate
+google-api-python-client

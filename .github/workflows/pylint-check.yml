@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5  # This action sets up Python
-  
-    - name: Install Dependencies
-      run: pip install -r requirements.txt  # Install your Python dependencies
-  
-    - name: Lint Check
-      run: pylint src/ --disable import-error
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5 # This action sets up Python
+
+      - name: Install Dependencies
+        run: pip install pylint # Install your Python dependencies
+
+      - name: Lint Check
+        run: pylint lambdas/ --disable import-error

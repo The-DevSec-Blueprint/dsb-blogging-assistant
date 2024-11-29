@@ -1,0 +1,132 @@
+{
+    "StartAt": "Get Video Information",
+    "States": {
+      "Get Video Information": {
+        "Type": "Task",
+        "Resource": "CORE_LAMBDA_ARN",
+        "Parameters": {
+          "actionName": "getVideoId",
+          "videoName.$": "$.videoName",
+          "videoUrl.$": "$.videoUrl"
+        },
+        "ResultPath": "$.getVideoId",
+        "Next": "Is Video Short?"
+      },
+      "Is Video Short?": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "Variable": "$.getVideoId.isShort",
+            "BooleanEquals": true,
+            "Next": "Ignore Short Video"
+          },
+          {
+            "Variable": "$.getVideoId.isShort",
+            "BooleanEquals": false,
+            "Next": "Send Video Confirmation Email"
+          }
+        ],
+        "Default": "Send Video Confirmation Email"
+      },
+      "Ignore Short Video": {
+        "Type": "Pass",
+        "End": true
+      },
+      "Send Video Confirmation Email": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+        "Parameters": {
+          "FunctionName": "CORE_LAMBDA_ARN",
+          "Payload": {
+            "actionName": "sendConfirmationEmail",
+            "videoName.$": "$.videoName",
+            "token.$": "$$.Task.Token",
+            "ExecutionContext.$": "$$",
+            "processorLambdaFunctionUrl": "DES_LAMBDA_ARN"
+          }
+        },
+        "TimeoutSeconds": 300,
+        "ResultPath": "$.sendConfirmationEmail",
+        "Next": "Is The Video Technical?"
+      },
+      "Is The Video Technical?": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "Variable": "$.sendConfirmationEmail.Status",
+            "StringEquals": "Video is confirmed as technical!",
+            "Next": "Generate Technical Blog Post with Claude"
+          }
+        ],
+        "Default": "Generate Non-Technical Blog Post with Claude"
+      },
+      "Generate Technical Blog Post with Claude": {
+        "Type": "Task",
+        "Resource": "CORE_LAMBDA_ARN",
+        "Parameters": {
+          "actionName": "generateBlogPost",
+          "videoName.$": "$.videoName",
+          "videoType": "technical",
+          "transcript.$": "$.getVideoId.transcript"
+        },
+        "ResultPath": "$.generateBlogPost",
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "States.ALL"
+            ],
+            "IntervalSeconds": 60,
+            "BackoffRate": 1.0,
+            "MaxAttempts": 5
+          }
+        ],
+        "Next": "Publish MD Blog to GitHub"
+      },
+      "Generate Non-Technical Blog Post with Claude": {
+        "Type": "Task",
+        "Resource": "CORE_LAMBDA_ARN",
+        "Parameters": {
+          "actionName": "generateBlogPost",
+          "videoName.$": "$.videoName",
+          "videoType": "non-technical",
+          "transcript.$": "$.getVideoId.transcript"
+        },
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "States.ALL"
+            ],
+            "IntervalSeconds": 60,
+            "BackoffRate": 1.0,
+            "MaxAttempts": 5
+          }
+        ],
+        "ResultPath": "$.generateBlogPost",
+        "Next": "Publish MD Blog to GitHub"
+      },
+      "Publish MD Blog to GitHub": {
+        "Type": "Task",
+        "Resource": "CORE_LAMBDA_ARN",
+        "Parameters": {
+          "actionName": "commitBlogToGitHub",
+          "videoName.$": "$.videoName",
+          "blogPostContents.$": "$.generateBlogPost.blogPostContents"
+        },
+        "ResultPath": "$.commitBlogToGitHub",
+        "Next": "Send Email To DSB"
+      },
+      "Send Email To DSB": {
+        "Type": "Task",
+        "Resource": "CORE_LAMBDA_ARN",
+        "Parameters": {
+          "actionName": "sendEmail",
+          "commitId.$": "$.commitBlogToGitHub.commitId",
+          "branchName.$": "$.commitBlogToGitHub.branchName",
+          "videoName.$": "$.videoName"
+        },
+        "ResultPath": "$.sendEmail",
+        "End": true
+      }
+    }
+  }
+  
