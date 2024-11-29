@@ -14,14 +14,28 @@ jobs:
       - name: Check if there are changes in lambdas/core
         id: check_changes
         run: |
-          if git diff --quiet HEAD^ HEAD -- 'lambdas/core/**'; then
-            echo "No changes detected in lambdas/core"
-            exit 1
+          if git rev-parse --verify HEAD >/dev/null 2>&1; then
+            # Check against HEAD if this is not the first commit
+            if git diff --quiet HEAD -- 'lambdas/core/**'; then
+              echo "No changes detected in lambdas/core"
+              echo "changes=false" >> $GITHUB_ENV
+            else
+              echo "Changes detected in lambdas/core"
+              echo "changes=true" >> $GITHUB_ENV
+            fi
+          else
+            # Handle the initial commit case
+            if git ls-files -- 'lambdas/core/**' | grep -q .; then
+              echo "Changes detected in lambdas/core (initial commit)"
+              echo "changes=true" >> $GITHUB_ENV
+            else
+              echo "No changes detected in lambdas/core (initial commit)"
+              echo "changes=false" >> $GITHUB_ENV
+            fi
           fi
-          echo "Changes detected in lambdas/core"
 
       - name: Configure AWS credentials
-        if: success() # Proceed only if changes are detected
+        if: env.changes == 'true' # Proceed only if changes are detected
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -29,14 +43,14 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        if: success() # Proceed only if changes are detected
+        if: env.changes == 'true' # Proceed only if changes are detected
         run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
       - name: Build Docker image
-        if: success() # Proceed only if changes are detected
+        if: env.changes == 'true' # Proceed only if changes are detected
         working-directory: ./lambdas/core
         run: docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dsb-blogging-assistant-core-lambda-image:latest -f Dockerfile .
 
       - name: Push Docker image to ECR
-        if: success() # Proceed only if changes are detected
+        if: env.changes == 'true' # Proceed only if changes are detected
         run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/dsb-blogging-assistant-core-lambda-image:latest

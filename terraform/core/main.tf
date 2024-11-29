@@ -187,8 +187,8 @@ resource "aws_sfn_state_machine" "default" {
           "CORE_LAMBDA_ARN",
           module.core_lambda_func.arn
         ),
-        "DES_LAMBDA_ARN",
-        module.des_lambda_func.arn
+        "DES_LAMBDA_URL",
+        module.des_lambda_func.function_url
       )
     )
   )
@@ -403,6 +403,7 @@ module "des_lambda_func" {
   image_uri = data.aws_ecr_image.des_image_lookup.image_uri
   timeout   = 120 # 2 minutes
 
+  create_function_url               = true
   create_permission                 = true
   permission_action                 = "lambda:InvokeFunctionUrl"
   permission_principal              = "*"

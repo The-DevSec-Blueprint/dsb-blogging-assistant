@@ -42,7 +42,7 @@
             "videoName.$": "$.videoName",
             "token.$": "$$.Task.Token",
             "ExecutionContext.$": "$$",
-            "processorLambdaFunctionUrl": "DES_LAMBDA_ARN"
+            "processorLambdaFunctionUrl": "DES_LAMBDA_URL"
           }
         },
         "TimeoutSeconds": 300,
