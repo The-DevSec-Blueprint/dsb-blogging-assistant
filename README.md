@@ -195,6 +195,12 @@ This workflow builds and pushes the Lambda image to Amazon ECR if changes are de
 - **Scalable and Serverless**: AWS Bedrock integrates seamlessly with Lambda and Step Functions for efficient and scalable execution.
 - **Customizable**: Claude can be tailored to fit specific content styles and tones.
 
+## Notable Presentations
+
+- DEV322: A YouTuber's Magic Wand: Converting videos to blogs, AWS re:Invent 2024 (Chalk Talk)
+  - Slide Deck: [Click Me](./docs/conferences/reinvent_2024/DEV322.pdf)
+  - Demo Video: [Click Me](./docs/conferences/reinvent_2024/youtuber_magic_wand_demo.mp4)
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
