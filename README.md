@@ -1,6 +1,5 @@
 # DSB Blogging Assistant
 
-![Build Status](https://github.com/The-DevSec-Blueprint/dsb-blogging-assistant/actions/workflows/main.yml/badge.svg?logo=github)
 ![License](https://img.shields.io/github/license/The-DevSec-Blueprint/dsb-blogging-assistant?logo=license)
 ![Terraform Registry](https://img.shields.io/badge/Terraform-Registry-purple?logo=terraform)
 ![Python Requirements](https://img.shields.io/badge/python-3.12-blue?logo=python)
